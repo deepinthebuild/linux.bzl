@@ -3,71 +3,71 @@
     {
       "name": "base",
       "config_payload": "17317bb1ec63ca3d2e87f7508ae976a2beefa9f8a575f944d7894793fbfe4651",
-      "object_targets": ["init__09f7f45bd4ea4a12beb34948"]
+      "object_targets": ["init__aa8d5bf682f243df227da3d5"]
     },
     {
       "name": "blocked_driver",
       "config_payload": "17317bb1ec63ca3d2e87f7508ae976a2beefa9f8a575f944d7894793fbfe4651",
-      "object_targets": ["init__09f7f45bd4ea4a12beb34948"]
+      "object_targets": ["init__aa8d5bf682f243df227da3d5"]
     },
     {
       "name": "debug",
       "config_payload": "d54fa7e50cedbdff324c0353601926df9fe5743fd822802651f21a64c4f5d043",
       "object_targets": [
-        "init__09f7f45bd4ea4a12beb34948",
-        "debug__e051f288f77d03996d9472f3"
+        "init__aa8d5bf682f243df227da3d5",
+        "debug__5aaaf14ad99180c0c17dc47b"
       ]
     },
     {
       "name": "force_net",
       "config_payload": "d27e9650050f54b1ba2161668772d0e82e2f4b318a0709e2a8151fc9b458af65",
       "object_targets": [
-        "init__616062e1e392978c3108d304",
-        "net_core__ec553a33e0c9ee1ed42f749b",
-        "drivers_foo__478d28ae3c1bf1a056295b1b"
+        "init__b9379f40eb2980fe2beb4763",
+        "net_core__a7751c9df526695cbf397024",
+        "drivers_foo__14b172eb96f0101a84dceac5"
       ]
     }
   ],
   "config_payloads": [
     {
-      "id": "0ac288d5df451fd444fe1496e22316344ff9d593b5e2789d4d5337dcc17ee6f2",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\nKERNEL_VERSION=6.18.2\n"
+      "id": "14ed06ac53f97a79abd6676b7d64c0cd54327f60b555a91cde3aa890a91ee1b2",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\nCONFIG_HZ=n\n"
     },
     {
       "id": "17317bb1ec63ca3d2e87f7508ae976a2beefa9f8a575f944d7894793fbfe4651",
       "content": "CONFIG_CC_IS_CLANG=y\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_PCI=y\nCONFIG_X86_64=y\n"
     },
     {
+      "id": "1dd459f8f895130eed8de7f8aedb666ee6d87e899a4390abdd6232d5bd78c612",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\n"
+    },
+    {
       "id": "1ee0af8cd100cb360f4305a622e9eb70a3b2f9fd589de5ae5dcd394117ed79f7",
       "content": "CONFIG_ARM64_BTI_KERNEL=n\nCONFIG_ARM64_PTR_AUTH_KERNEL=n\nCONFIG_ASM_MODVERSIONS=n\nCONFIG_AS_HAS_ARMV8_5=n\nCONFIG_BASIC_MODVERSIONS=n\nCONFIG_CALL_PADDING=n\nCONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_ENABLER=n\nCONFIG_CC_HAS_K_CONSTRAINT=n\nCONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT=n\nCONFIG_CC_IS_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n\nCONFIG_CC_OPTIMIZE_FOR_SIZE=n\nCONFIG_CPU_BIG_ENDIAN=n\nCONFIG_DEBUG=y\nCONFIG_DEBUG_INFO=n\nCONFIG_DEBUG_INFO_DWARF4=n\nCONFIG_DEBUG_INFO_DWARF5=n\nCONFIG_DEBUG_SECTION_MISMATCH=n\nCONFIG_DYNAMIC_FTRACE_WITH_ARGS=n\nCONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=n\nCONFIG_EXTRA_CFLAGS=n\nCONFIG_FINEIBT=n\nCONFIG_FRAME_POINTER=n\nCONFIG_FTRACE_MCOUNT_USE_CC=n\nCONFIG_FTRACE_MCOUNT_USE_OBJTOOL=n\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_FUNCTION_PADDING_BYTES=n\nCONFIG_FUNCTION_TRACER=n\nCONFIG_GCOV_KERNEL=n\nCONFIG_GENKSYMS=n\nCONFIG_H=n\nCONFIG_HAVE_FENTRY=n\nCONFIG_HAVE_JUMP_LABEL_HACK=n\nCONFIG_HAVE_NOINSTR_HACK=n\nCONFIG_HAVE_NOP_MCOUNT=n\nCONFIG_HAVE_OBJTOOL_NOP_MCOUNT=n\nCONFIG_HAVE_STATIC_CALL_INLINE=n\nCONFIG_HAVE_UACCESS_VALIDATION=n\nCONFIG_INIT_STACK_ALL_PATTERN=n\nCONFIG_INIT_STACK_ALL_ZERO=n\nCONFIG_KASAN_GENERIC=n\nCONFIG_KASAN_SW_TAGS=n\nCONFIG_KCOV=n\nCONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n\nCONFIG_LTO_CLANG=n\nCONFIG_LTO_CLANG_FULL=n\nCONFIG_LTO_CLANG_THIN=n\nCONFIG_MITIGATION_CALL_DEPTH_TRACKING=n\nCONFIG_MITIGATION_RETHUNK=n\nCONFIG_MITIGATION_RETPOLINE=n\nCONFIG_MITIGATION_SLS=n\nCONFIG_MITIGATION_SRSO=n\nCONFIG_MITIGATION_UNRET_ENTRY=n\nCONFIG_MODVERSIONS=n\nCONFIG_NET=n\nCONFIG_NOINSTR_VALIDATION=n\nCONFIG_OBJTOOL=n\nCONFIG_OBJTOOL_WERROR=n\nCONFIG_PREFIX_SYMBOLS=n\nCONFIG_READABLE_ASM=n\nCONFIG_SHADOW_CALL_STACK=n\nCONFIG_SMP=n\nCONFIG_STACKPROTECTOR=n\nCONFIG_STACKPROTECTOR_STRONG=n\nCONFIG_STACK_VALIDATION=n\nCONFIG_UNWINDER_ORC=n\nCONFIG_UNWIND_TABLES=n\nCONFIG_X86_64=y\nCONFIG_X86_KERNEL_IBT=n\nCONFIG_X86_NATIVE_CPU=n\nCONFIG_ZERO_CALL_USED_REGS=n\n"
     },
     {
-      "id": "278b36f856e193530d63932523c4983be48116ec4e20ce6dd58584d49f9467f4",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\nCONFIG_ARM64_BTI_KERNEL=n\nCONFIG_ARM64_PTR_AUTH_KERNEL=n\nCONFIG_AS_HAS_ARMV8_5=n\nCONFIG_CALL_PADDING=n\nCONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_ENABLER=n\nCONFIG_CC_HAS_K_CONSTRAINT=n\nCONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT=n\nCONFIG_CC_IS_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n\nCONFIG_CC_OPTIMIZE_FOR_SIZE=n\nCONFIG_CPU_BIG_ENDIAN=n\nCONFIG_DEBUG_INFO=n\nCONFIG_DEBUG_INFO_DWARF4=n\nCONFIG_DEBUG_INFO_DWARF5=n\nCONFIG_DEBUG_SECTION_MISMATCH=n\nCONFIG_DYNAMIC_FTRACE_WITH_ARGS=n\nCONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=n\nCONFIG_FRAME_POINTER=n\nCONFIG_FTRACE_MCOUNT_USE_CC=n\nCONFIG_FTRACE_MCOUNT_USE_OBJTOOL=n\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_FUNCTION_PADDING_BYTES=n\nCONFIG_FUNCTION_TRACER=n\nCONFIG_H=n\nCONFIG_HAVE_FENTRY=n\nCONFIG_HAVE_NOP_MCOUNT=n\nCONFIG_HAVE_OBJTOOL_NOP_MCOUNT=n\nCONFIG_INIT_STACK_ALL_PATTERN=n\nCONFIG_INIT_STACK_ALL_ZERO=n\nCONFIG_KASAN_GENERIC=n\nCONFIG_KASAN_SW_TAGS=n\nCONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n\nCONFIG_LTO_CLANG_FULL=n\nCONFIG_LTO_CLANG_THIN=n\nCONFIG_MITIGATION_RETHUNK=n\nCONFIG_MITIGATION_RETPOLINE=n\nCONFIG_MITIGATION_SLS=n\nCONFIG_READABLE_ASM=n\nCONFIG_SHADOW_CALL_STACK=n\nCONFIG_SMP=n\nCONFIG_STACKPROTECTOR=n\nCONFIG_STACKPROTECTOR_STRONG=n\nCONFIG_UNWIND_TABLES=n\nCONFIG_X86_64=y\nCONFIG_X86_KERNEL_IBT=n\nCONFIG_X86_NATIVE_CPU=n\nCONFIG_ZERO_CALL_USED_REGS=n\n"
+      "id": "5b00dd86bde943cbc605fcbbd6590229eedb5cdf671d493a944b8e5295054865",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\nKERNEL_VERSION=6.18.2\n"
+    },
+    {
+      "id": "5cc3e983fecd748cb502f5487d9f18c05d9fc11e30306c5b1159b7e09a03efa8",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\nCONFIG_LOCALVERSION=n\nKERNEL_VERSION=6.18.2\n"
     },
     {
       "id": "5ed5f53d1e000f234fcda63f8a0360a83ef408e45a57d00f9537961fca33e534",
       "content": "CONFIG_ARM64_BTI_KERNEL=n\nCONFIG_ARM64_PTR_AUTH_KERNEL=n\nCONFIG_ASM_MODVERSIONS=n\nCONFIG_AS_HAS_ARMV8_5=n\nCONFIG_BASIC_MODVERSIONS=n\nCONFIG_CALL_PADDING=n\nCONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_ENABLER=n\nCONFIG_CC_HAS_K_CONSTRAINT=n\nCONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT=n\nCONFIG_CC_IS_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n\nCONFIG_CC_OPTIMIZE_FOR_SIZE=n\nCONFIG_CPU_BIG_ENDIAN=n\nCONFIG_DEBUG_INFO=n\nCONFIG_DEBUG_INFO_DWARF4=n\nCONFIG_DEBUG_INFO_DWARF5=n\nCONFIG_DEBUG_SECTION_MISMATCH=n\nCONFIG_DYNAMIC_FTRACE_WITH_ARGS=n\nCONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=n\nCONFIG_EXTRA_CFLAGS=n\nCONFIG_FINEIBT=n\nCONFIG_FRAME_POINTER=n\nCONFIG_FTRACE_MCOUNT_USE_CC=n\nCONFIG_FTRACE_MCOUNT_USE_OBJTOOL=n\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_FUNCTION_PADDING_BYTES=n\nCONFIG_FUNCTION_TRACER=n\nCONFIG_GCOV_KERNEL=n\nCONFIG_GENKSYMS=n\nCONFIG_H=n\nCONFIG_HAVE_FENTRY=n\nCONFIG_HAVE_JUMP_LABEL_HACK=n\nCONFIG_HAVE_NOINSTR_HACK=n\nCONFIG_HAVE_NOP_MCOUNT=n\nCONFIG_HAVE_OBJTOOL_NOP_MCOUNT=n\nCONFIG_HAVE_STATIC_CALL_INLINE=n\nCONFIG_HAVE_UACCESS_VALIDATION=n\nCONFIG_INIT_STACK_ALL_PATTERN=n\nCONFIG_INIT_STACK_ALL_ZERO=n\nCONFIG_KASAN_GENERIC=n\nCONFIG_KASAN_SW_TAGS=n\nCONFIG_KCOV=n\nCONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n\nCONFIG_LTO_CLANG=n\nCONFIG_LTO_CLANG_FULL=n\nCONFIG_LTO_CLANG_THIN=n\nCONFIG_MITIGATION_CALL_DEPTH_TRACKING=n\nCONFIG_MITIGATION_RETHUNK=n\nCONFIG_MITIGATION_RETPOLINE=n\nCONFIG_MITIGATION_SLS=n\nCONFIG_MITIGATION_SRSO=n\nCONFIG_MITIGATION_UNRET_ENTRY=n\nCONFIG_MODVERSIONS=n\nCONFIG_NET=n\nCONFIG_NOINSTR_VALIDATION=n\nCONFIG_OBJTOOL=n\nCONFIG_OBJTOOL_WERROR=n\nCONFIG_PREFIX_SYMBOLS=n\nCONFIG_READABLE_ASM=n\nCONFIG_SHADOW_CALL_STACK=n\nCONFIG_SMP=n\nCONFIG_STACKPROTECTOR=n\nCONFIG_STACKPROTECTOR_STRONG=n\nCONFIG_STACK_VALIDATION=n\nCONFIG_UNWINDER_ORC=n\nCONFIG_UNWIND_TABLES=n\nCONFIG_X86_64=y\nCONFIG_X86_KERNEL_IBT=n\nCONFIG_X86_NATIVE_CPU=n\nCONFIG_ZERO_CALL_USED_REGS=n\n"
     },
     {
-      "id": "82f9ea43be7dcaa2926a1f97b930f76179bcd57b8f6027525a704a84ab0e31d6",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\nCONFIG_ARM64_BTI_KERNEL=n\nCONFIG_ARM64_PTR_AUTH_KERNEL=n\nCONFIG_AS_HAS_ARMV8_5=n\nCONFIG_CALL_PADDING=n\nCONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_ENABLER=n\nCONFIG_CC_HAS_K_CONSTRAINT=n\nCONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT=n\nCONFIG_CC_IS_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n\nCONFIG_CC_OPTIMIZE_FOR_SIZE=n\nCONFIG_CPU_BIG_ENDIAN=n\nCONFIG_DEBUG_INFO=n\nCONFIG_DEBUG_INFO_DWARF4=n\nCONFIG_DEBUG_INFO_DWARF5=n\nCONFIG_DEBUG_SECTION_MISMATCH=n\nCONFIG_DYNAMIC_FTRACE_WITH_ARGS=n\nCONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=n\nCONFIG_FRAME_POINTER=n\nCONFIG_FTRACE_MCOUNT_USE_CC=n\nCONFIG_FTRACE_MCOUNT_USE_OBJTOOL=n\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_FUNCTION_PADDING_BYTES=n\nCONFIG_FUNCTION_TRACER=n\nCONFIG_GCC_PLUGINS=n\nCONFIG_H=n\nCONFIG_HAVE_FENTRY=n\nCONFIG_HAVE_NOP_MCOUNT=n\nCONFIG_HAVE_OBJTOOL_NOP_MCOUNT=n\nCONFIG_HZ=n\nCONFIG_INIT_STACK_ALL_PATTERN=n\nCONFIG_INIT_STACK_ALL_ZERO=n\nCONFIG_KASAN_GENERIC=n\nCONFIG_KASAN_SW_TAGS=n\nCONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n\nCONFIG_LOCALVERSION=n\nCONFIG_LTO_CLANG_FULL=n\nCONFIG_LTO_CLANG_THIN=n\nCONFIG_MITIGATION_RETHUNK=n\nCONFIG_MITIGATION_RETPOLINE=n\nCONFIG_MITIGATION_SLS=n\nCONFIG_PREEMPT_BUILD=n\nCONFIG_PREEMPT_DYNAMIC=n\nCONFIG_PREEMPT_RT=n\nCONFIG_RANDSTRUCT=n\nCONFIG_READABLE_ASM=n\nCONFIG_SHADOW_CALL_STACK=n\nCONFIG_SMP=n\nCONFIG_STACKPROTECTOR=n\nCONFIG_STACKPROTECTOR_PER_TASK=n\nCONFIG_STACKPROTECTOR_STRONG=n\nCONFIG_UNWIND_TABLES=n\nCONFIG_X86_64=y\nCONFIG_X86_KERNEL_IBT=n\nCONFIG_X86_NATIVE_CPU=n\nCONFIG_ZERO_CALL_USED_REGS=n\nKBUILD_BUILD_TIMESTAMP=1970-01-01T00:00:00Z\nKBUILD_BUILD_VERSION=1\nKERNEL_VERSION=6.18.2\n"
+      "id": "782a1e71b2dc86e13780c9cd8635356edfed49e9325c6801e3f8a9be07c718b8",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\nCONFIG_ARM64_BTI_KERNEL=n\nCONFIG_ARM64_PTR_AUTH_KERNEL=n\nCONFIG_AS_HAS_ARMV8_5=n\nCONFIG_CALL_PADDING=n\nCONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_ENABLER=n\nCONFIG_CC_HAS_K_CONSTRAINT=n\nCONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT=n\nCONFIG_CC_IS_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n\nCONFIG_CC_OPTIMIZE_FOR_SIZE=n\nCONFIG_CPU_BIG_ENDIAN=n\nCONFIG_DEBUG_INFO=n\nCONFIG_DEBUG_INFO_DWARF4=n\nCONFIG_DEBUG_INFO_DWARF5=n\nCONFIG_DEBUG_SECTION_MISMATCH=n\nCONFIG_DYNAMIC_FTRACE_WITH_ARGS=n\nCONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=n\nCONFIG_FRAME_POINTER=n\nCONFIG_FTRACE_MCOUNT_USE_CC=n\nCONFIG_FTRACE_MCOUNT_USE_OBJTOOL=n\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_FUNCTION_PADDING_BYTES=n\nCONFIG_FUNCTION_TRACER=n\nCONFIG_H=n\nCONFIG_HAVE_FENTRY=n\nCONFIG_HAVE_NOP_MCOUNT=n\nCONFIG_HAVE_OBJTOOL_NOP_MCOUNT=n\nCONFIG_INIT_STACK_ALL_PATTERN=n\nCONFIG_INIT_STACK_ALL_ZERO=n\nCONFIG_KASAN_GENERIC=n\nCONFIG_KASAN_SW_TAGS=n\nCONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n\nCONFIG_LTO_CLANG_FULL=n\nCONFIG_LTO_CLANG_THIN=n\nCONFIG_MITIGATION_RETHUNK=n\nCONFIG_MITIGATION_RETPOLINE=n\nCONFIG_MITIGATION_SLS=n\nCONFIG_READABLE_ASM=n\nCONFIG_SHADOW_CALL_STACK=n\nCONFIG_SMP=n\nCONFIG_STACKPROTECTOR=n\nCONFIG_STACKPROTECTOR_STRONG=n\nCONFIG_UNWIND_TABLES=n\nCONFIG_X86_64=y\nCONFIG_X86_KERNEL_IBT=n\nCONFIG_X86_NATIVE_CPU=n\nCONFIG_ZERO_CALL_USED_REGS=n\n"
     },
     {
-      "id": "936d21ad086cde9962306b4aec14d4be3dabf16b6af8ea518e130992a80491c9",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\nCONFIG_LOCALVERSION=n\nKERNEL_VERSION=6.18.2\n"
+      "id": "941bbf04a336b6fb85289c1e7ab90e685ba77f00bdf5b8fd3303a1d90ccea053",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\nCONFIG_ARM64_BTI_KERNEL=n\nCONFIG_ARM64_PTR_AUTH_KERNEL=n\nCONFIG_AS_HAS_ARMV8_5=n\nCONFIG_CALL_PADDING=n\nCONFIG_CC_HAS_AUTO_VAR_INIT_ZERO_ENABLER=n\nCONFIG_CC_HAS_K_CONSTRAINT=n\nCONFIG_CC_HAS_MIN_FUNCTION_ALIGNMENT=n\nCONFIG_CC_IS_CLANG=y\nCONFIG_CC_OPTIMIZE_FOR_PERFORMANCE=n\nCONFIG_CC_OPTIMIZE_FOR_SIZE=n\nCONFIG_CPU_BIG_ENDIAN=n\nCONFIG_DEBUG_INFO=n\nCONFIG_DEBUG_INFO_DWARF4=n\nCONFIG_DEBUG_INFO_DWARF5=n\nCONFIG_DEBUG_SECTION_MISMATCH=n\nCONFIG_DYNAMIC_FTRACE_WITH_ARGS=n\nCONFIG_DYNAMIC_FTRACE_WITH_CALL_OPS=n\nCONFIG_FRAME_POINTER=n\nCONFIG_FTRACE_MCOUNT_USE_CC=n\nCONFIG_FTRACE_MCOUNT_USE_OBJTOOL=n\nCONFIG_FUNCTION_ALIGNMENT=16\nCONFIG_FUNCTION_PADDING_BYTES=n\nCONFIG_FUNCTION_TRACER=n\nCONFIG_GCC_PLUGINS=n\nCONFIG_H=n\nCONFIG_HAVE_FENTRY=n\nCONFIG_HAVE_NOP_MCOUNT=n\nCONFIG_HAVE_OBJTOOL_NOP_MCOUNT=n\nCONFIG_HZ=n\nCONFIG_INIT_STACK_ALL_PATTERN=n\nCONFIG_INIT_STACK_ALL_ZERO=n\nCONFIG_KASAN_GENERIC=n\nCONFIG_KASAN_SW_TAGS=n\nCONFIG_LD_DEAD_CODE_DATA_ELIMINATION=n\nCONFIG_LOCALVERSION=n\nCONFIG_LTO_CLANG_FULL=n\nCONFIG_LTO_CLANG_THIN=n\nCONFIG_MITIGATION_RETHUNK=n\nCONFIG_MITIGATION_RETPOLINE=n\nCONFIG_MITIGATION_SLS=n\nCONFIG_PREEMPT_BUILD=n\nCONFIG_PREEMPT_DYNAMIC=n\nCONFIG_PREEMPT_RT=n\nCONFIG_RANDSTRUCT=n\nCONFIG_READABLE_ASM=n\nCONFIG_SHADOW_CALL_STACK=n\nCONFIG_SMP=n\nCONFIG_STACKPROTECTOR=n\nCONFIG_STACKPROTECTOR_PER_TASK=n\nCONFIG_STACKPROTECTOR_STRONG=n\nCONFIG_UNWIND_TABLES=n\nCONFIG_X86_64=y\nCONFIG_X86_KERNEL_IBT=n\nCONFIG_X86_NATIVE_CPU=n\nCONFIG_ZERO_CALL_USED_REGS=n\nKBUILD_BUILD_TIMESTAMP=1970-01-01T00:00:00Z\nKBUILD_BUILD_VERSION=1\nKERNEL_VERSION=6.18.2\n"
     },
     {
-      "id": "973d5677d0a60965edf94f5b1d1c66e001c4bd5d270e2a5141a6fbe1a411c180",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\nCONFIG_PREEMPT_BUILD=n\nCONFIG_PREEMPT_DYNAMIC=n\nCONFIG_PREEMPT_RT=n\nCONFIG_SMP=n\nKBUILD_BUILD_TIMESTAMP=1970-01-01T00:00:00Z\nKBUILD_BUILD_VERSION=1\n"
-    },
-    {
-      "id": "b5c60c74506dfda2e6daab62168354b610658b3702bd26ed6a8c4a5a2e88f92a",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\nCONFIG_HZ=n\n"
-    },
-    {
-      "id": "bdd8b7c0ea928f0b3d3f2d9b80ee8c64234adfb3ec3b273fec4571567f3b577e",
-      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64\n"
+      "id": "9a9b74e03a68bd8876cab4923e7ca948a555b93b3d837dcbbba94f365e476b1f",
+      "content": "COMPILE_ENVIRONMENT_ABI=linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64\nCONFIG_PREEMPT_BUILD=n\nCONFIG_PREEMPT_DYNAMIC=n\nCONFIG_PREEMPT_RT=n\nCONFIG_SMP=n\nKBUILD_BUILD_TIMESTAMP=1970-01-01T00:00:00Z\nKBUILD_BUILD_VERSION=1\n"
     },
     {
       "id": "d27e9650050f54b1ba2161668772d0e82e2f4b318a0709e2a8151fc9b458af65",
@@ -88,31 +88,31 @@
   ],
   "compile_environments": [
     {
-      "id": "088aea5b683ad3ef976ac7e9f9e93a599f0419c2ac043613676e36313da7af09",
-      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64",
-      "config_payload": "5ed5f53d1e000f234fcda63f8a0360a83ef408e45a57d00f9537961fca33e534"
-    },
-    {
-      "id": "3dce83f8d08910f5b5a63fd0ad6bd2f03bdf1e7dc27bfe953e16404deb7018f6",
-      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64",
+      "id": "5194849bb689b7955140176dafc26f47dc9707aa39c5ee6bf24474571907c994",
+      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64",
       "config_payload": "1ee0af8cd100cb360f4305a622e9eb70a3b2f9fd589de5ae5dcd394117ed79f7"
     },
     {
-      "id": "71615c7d29e854e095c8c2a449e666ccdef4290eb77a0e9a20ed142c0893091e",
-      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64",
+      "id": "8df3ca943a843f61206bae352e0d43d1f2a83c272108c3ad9842bcfeb9baf2f8",
+      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64",
       "config_payload": "d42226deb57b764f77034a07557c05fb47c7e0b23e010a5ddb81c91f1e45d98e"
     },
     {
-      "id": "cc6beacc8a61514c707260471c7edba66022aa738a83434590f5d909b5c7101a",
-      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v1/x86_64",
+      "id": "932dd1ea7e04c6f804aab6a11dd454d92ca7efa5582cc9192f2c22e894726c67",
+      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64",
       "config_payload": "e54f5a60237b764524b97ae13fb4e62228ada84859226480a1a9bc15f5d2469a"
+    },
+    {
+      "id": "e61611403baf5a68af68fb49bf088ec4920d132726e84822c1833fb5d9799fab",
+      "abi": "linux.bzl/test/x86/llvm-22/capabilities-v2/x86_64",
+      "config_payload": "5ed5f53d1e000f234fcda63f8a0360a83ef408e45a57d00f9537961fca33e534"
     }
   ],
   "generated_header_families": [
     {
-      "id": "000145c19f3b56102503b8411d35d46fdfcc3e83c256aba68240d438982a08b7",
+      "id": "084690272122022f704867d48b8dac923aab223eaf25466ffa9069aa81abce31",
       "name": "utsversion",
-      "config_payload": "973d5677d0a60965edf94f5b1d1c66e001c4bd5d270e2a5141a6fbe1a411c180",
+      "config_payload": "9a9b74e03a68bd8876cab4923e7ca948a555b93b3d837dcbbba94f365e476b1f",
       "labels": [
         "//tests/compact:base_generated_headers",
         "//tests/compact:blocked_driver_generated_headers",
@@ -122,97 +122,9 @@
       "srcarch": "x86"
     },
     {
-      "id": "08f8e0323e8330058218d41586be29d1a1f6376f77802d2e3a6e203b853b1ffe",
-      "name": "all",
-      "config_payload": "82f9ea43be7dcaa2926a1f97b930f76179bcd57b8f6027525a704a84ab0e31d6",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86",
-      "source_input_group": 3
-    },
-    {
-      "id": "0ea94da3eb379a3a5b1e81018dda9a494bf624071e82ff4644e5e39fb1bace77",
-      "name": "kvm_offsets",
-      "config_payload": "278b36f856e193530d63932523c4983be48116ec4e20ce6dd58584d49f9467f4",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86",
-      "source_input_group": 3
-    },
-    {
-      "id": "24729abd67df3d1d3837c61172fdca6074825f9cc7bd108101664fb4d951c989",
-      "name": "cpufeatures",
-      "config_payload": "bdd8b7c0ea928f0b3d3f2d9b80ee8c64234adfb3ec3b273fec4571567f3b577e",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86"
-    },
-    {
-      "id": "27fb587285c7882cd7d231bea4323130d96b4c2af9f1a313bee9f3eed90abc6e",
-      "name": "utsrelease",
-      "config_payload": "936d21ad086cde9962306b4aec14d4be3dabf16b6af8ea518e130992a80491c9",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86"
-    },
-    {
-      "id": "34a8124cd4ae619a5df2cc6b1e0c78dc2418352c47a2b1d9e8291229ad81247f",
-      "name": "version",
-      "config_payload": "0ac288d5df451fd444fe1496e22316344ff9d593b5e2789d4d5337dcc17ee6f2",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86"
-    },
-    {
-      "id": "35925e250ca3fea38243b54abece2466ef598834ee1512480ec35fb448e8e9f4",
-      "name": "bounds",
-      "config_payload": "278b36f856e193530d63932523c4983be48116ec4e20ce6dd58584d49f9467f4",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86",
-      "source_input_group": 3
-    },
-    {
-      "id": "5a690e128b33dda46bc25de5ed06d0fdc889c450970aa3d9695c5b69f5496d6a",
-      "name": "rq_offsets",
-      "config_payload": "278b36f856e193530d63932523c4983be48116ec4e20ce6dd58584d49f9467f4",
-      "labels": [
-        "//tests/compact:base_generated_headers",
-        "//tests/compact:blocked_driver_generated_headers",
-        "//tests/compact:debug_generated_headers",
-        "//tests/compact:force_net_generated_headers"
-      ],
-      "srcarch": "x86",
-      "source_input_group": 3
-    },
-    {
-      "id": "a57cd1ddbbc22cb3c56aa69ac2912fab2def5589de4ddc5d98683962ba4c8bbf",
+      "id": "1bb9976ce5b357ce7076aa4d550e3ec1d0d38927c80ea9c65926d6afdb42a1ba",
       "name": "static",
-      "config_payload": "bdd8b7c0ea928f0b3d3f2d9b80ee8c64234adfb3ec3b273fec4571567f3b577e",
+      "config_payload": "1dd459f8f895130eed8de7f8aedb666ee6d87e899a4390abdd6232d5bd78c612",
       "labels": [
         "//tests/compact:base_generated_headers",
         "//tests/compact:blocked_driver_generated_headers",
@@ -222,9 +134,72 @@
       "srcarch": "x86"
     },
     {
-      "id": "c94275e62de9179d4f11e8ef47ecefeef2f0d6e5da12de7b2718e80bfdaa7356",
+      "id": "1d9b553f6e4b66b7ea1fc46f2c9cfb9579454a84c16ed4d74e90c9c180a847ad",
+      "name": "rq_offsets",
+      "config_payload": "782a1e71b2dc86e13780c9cd8635356edfed49e9325c6801e3f8a9be07c718b8",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86",
+      "source_input_group": 3
+    },
+    {
+      "id": "222d877143e4cc8c2b89c983783c34a4f5af9abefbecd55ff924207a1350d61a",
+      "name": "utsrelease",
+      "config_payload": "5cc3e983fecd748cb502f5487d9f18c05d9fc11e30306c5b1159b7e09a03efa8",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86"
+    },
+    {
+      "id": "47f97631417563eb2a3282ffd56741d29703872cadd8acb3c5bbc4c860950ef4",
+      "name": "kvm_offsets",
+      "config_payload": "782a1e71b2dc86e13780c9cd8635356edfed49e9325c6801e3f8a9be07c718b8",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86",
+      "source_input_group": 3
+    },
+    {
+      "id": "912ce02f0a05267d217d553c0bee2ca42d6c315dda63757da96eedadc6ba2950",
+      "name": "cpufeatures",
+      "config_payload": "1dd459f8f895130eed8de7f8aedb666ee6d87e899a4390abdd6232d5bd78c612",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86"
+    },
+    {
+      "id": "9c3069f95c25c85fc65ddbd70f6dff7592a089d9ea5556b3a39484dfc85a29fd",
+      "name": "bounds",
+      "config_payload": "782a1e71b2dc86e13780c9cd8635356edfed49e9325c6801e3f8a9be07c718b8",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86",
+      "source_input_group": 3
+    },
+    {
+      "id": "a924a086e56e0d0e1f87d2cdd32f2e68a1ebc6cb7f040158a4421e763e106778",
       "name": "timeconst",
-      "config_payload": "b5c60c74506dfda2e6daab62168354b610658b3702bd26ed6a8c4a5a2e88f92a",
+      "config_payload": "14ed06ac53f97a79abd6676b7d64c0cd54327f60b555a91cde3aa890a91ee1b2",
       "labels": [
         "//tests/compact:base_generated_headers",
         "//tests/compact:blocked_driver_generated_headers",
@@ -234,9 +209,22 @@
       "srcarch": "x86"
     },
     {
-      "id": "de6243babc5f1165be3c58c933317481129269f665b50f8aa56013685772440c",
+      "id": "bdbdcc56c6bf1f9c99e7803d750a026f97248e6a586714a041c09c3324bd96c2",
+      "name": "all",
+      "config_payload": "941bbf04a336b6fb85289c1e7ab90e685ba77f00bdf5b8fd3303a1d90ccea053",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86",
+      "source_input_group": 3
+    },
+    {
+      "id": "d0de186d3d739df664ddb49453d10388c25df886e036de748f03230bfca00f5d",
       "name": "compile",
-      "config_payload": "bdd8b7c0ea928f0b3d3f2d9b80ee8c64234adfb3ec3b273fec4571567f3b577e",
+      "config_payload": "1dd459f8f895130eed8de7f8aedb666ee6d87e899a4390abdd6232d5bd78c612",
       "labels": [
         "//tests/compact:base_generated_headers",
         "//tests/compact:blocked_driver_generated_headers",
@@ -246,9 +234,21 @@
       "srcarch": "x86"
     },
     {
-      "id": "df988e9f32cd7b9b8f40be35ea141f8d48fc97da99aaac372e22d0f097f4b8c7",
+      "id": "e23e722c970afdd022a1ab3cf85f38330c5572fa2e264f1738537fd332b21ee2",
+      "name": "version",
+      "config_payload": "5b00dd86bde943cbc605fcbbd6590229eedb5cdf671d493a944b8e5295054865",
+      "labels": [
+        "//tests/compact:base_generated_headers",
+        "//tests/compact:blocked_driver_generated_headers",
+        "//tests/compact:debug_generated_headers",
+        "//tests/compact:force_net_generated_headers"
+      ],
+      "srcarch": "x86"
+    },
+    {
+      "id": "e992cf262e4c78fbbf1dfa3708bbbbd8e09e73d16d29c5ae5cc429edd205c8dd",
       "name": "asm_offsets",
-      "config_payload": "278b36f856e193530d63932523c4983be48116ec4e20ce6dd58584d49f9467f4",
+      "config_payload": "782a1e71b2dc86e13780c9cd8635356edfed49e9325c6801e3f8a9be07c718b8",
       "labels": [
         "//tests/compact:base_generated_headers",
         "//tests/compact:blocked_driver_generated_headers",
@@ -292,38 +292,38 @@
   "source_input_groups": ["1,3,4,5", "2,3,4,5", "3,4,5", "3,4,5,6", "3,4,5,7"],
   "action_groups": [
     {
-      "id": "1cb6d75c186ac04f9633368ce248620a2cd70c928cd2b7f913789a7c340db60c",
+      "id": "07cf038561564c69ca4b31f0d92d7a09ffeafa02ece9c7f023f5e839493454ad",
+      "recipe_id": "801331f2d5c5b8ed4866ad1e8f311e025b2b973e74e8e75aa4db0c599f6d95d5",
+      "reachable_configs": ["force_net"],
+      "object_targets": ["net_core__a7751c9df526695cbf397024"]
+    },
+    {
+      "id": "80c21bc88c06f61a3059bc3f8589739a7b0a71707db1bea74b9cd7c0339c9334",
+      "recipe_id": "3b64299886ccbe56198b5b9c7fd58c02b67b0fbfda4276dde235aca709ce2587",
+      "reachable_configs": ["base", "blocked_driver", "debug"],
+      "object_targets": ["init__aa8d5bf682f243df227da3d5"]
+    },
+    {
+      "id": "862f555557b4ffef238130e5659d5971a87ade5afbc7df7f9fad864ca1551888",
+      "recipe_id": "3b64299886ccbe56198b5b9c7fd58c02b67b0fbfda4276dde235aca709ce2587",
+      "reachable_configs": ["debug"],
+      "object_targets": ["debug__5aaaf14ad99180c0c17dc47b"]
+    },
+    {
+      "id": "a1ecb4bd75c4f37af73333875b7dc92fc6097a94201994105b0b1b8eb38899ef",
       "recipe_id": "6712c4dfa25061b874d366183353452e032670841acd7a5d6f3a37281e280ccc",
       "reachable_configs": ["force_net"],
       "object_targets": [
-        "drivers_foo__478d28ae3c1bf1a056295b1b",
-        "init__616062e1e392978c3108d304"
+        "drivers_foo__14b172eb96f0101a84dceac5",
+        "init__b9379f40eb2980fe2beb4763"
       ]
-    },
-    {
-      "id": "21ecd3b6408ebc985b5fe08cc246e63e6d9889a6553d0a129b2c34be88ba04f3",
-      "recipe_id": "3b64299886ccbe56198b5b9c7fd58c02b67b0fbfda4276dde235aca709ce2587",
-      "reachable_configs": ["debug"],
-      "object_targets": ["debug__e051f288f77d03996d9472f3"]
-    },
-    {
-      "id": "96b7205c2c9081451d74394b8290123eaff302ba75f0189ae17fd2faa56b00ce",
-      "recipe_id": "3b64299886ccbe56198b5b9c7fd58c02b67b0fbfda4276dde235aca709ce2587",
-      "reachable_configs": ["base", "blocked_driver", "debug"],
-      "object_targets": ["init__09f7f45bd4ea4a12beb34948"]
-    },
-    {
-      "id": "bbdcfbcd9642031af3875e452f5eae183169e7ac1a83696f46f6255a23f3b76a",
-      "recipe_id": "801331f2d5c5b8ed4866ad1e8f311e025b2b973e74e8e75aa4db0c599f6d95d5",
-      "reachable_configs": ["force_net"],
-      "object_targets": ["net_core__ec553a33e0c9ee1ed42f749b"]
     }
   ],
   "object_variants": [
     {
-      "target": "debug__e051f288f77d03996d9472f3",
-      "content_id": "e051f288f77d03996d9472f307e0aafa93ab006653991abd4a663ecf05c24b39",
-      "compile_environment": "3dce83f8d08910f5b5a63fd0ad6bd2f03bdf1e7dc27bfe953e16404deb7018f6",
+      "target": "debug__5aaaf14ad99180c0c17dc47b",
+      "content_id": "5aaaf14ad99180c0c17dc47bc587ca072d51a4b5604c2e4c4a1f1500424c162c",
+      "compile_environment": "5194849bb689b7955140176dafc26f47dc9707aa39c5ee6bf24474571907c994",
       "object": "debug.o",
       "source": "debug.c",
       "source_input_group": 1,
@@ -331,9 +331,9 @@
       "flags": ["-Wall"]
     },
     {
-      "target": "drivers_foo__478d28ae3c1bf1a056295b1b",
-      "content_id": "478d28ae3c1bf1a056295b1be6f5467bbcc4817d9fb3ee17a1e529e9bea6cc18",
-      "compile_environment": "cc6beacc8a61514c707260471c7edba66022aa738a83434590f5d909b5c7101a",
+      "target": "drivers_foo__14b172eb96f0101a84dceac5",
+      "content_id": "14b172eb96f0101a84dceac5e466f44d23a264eab34189ffba7b219a1a8f68d6",
+      "compile_environment": "932dd1ea7e04c6f804aab6a11dd454d92ca7efa5582cc9192f2c22e894726c67",
       "object": "drivers/foo.o",
       "source": "drivers/foo.c",
       "source_input_group": 2,
@@ -341,9 +341,9 @@
       "flags": ["-Wall", "-DNET=y"]
     },
     {
-      "target": "init__09f7f45bd4ea4a12beb34948",
-      "content_id": "09f7f45bd4ea4a12beb349486b4445e67d99c9de37e6ac5fe475202be89fa686",
-      "compile_environment": "088aea5b683ad3ef976ac7e9f9e93a599f0419c2ac043613676e36313da7af09",
+      "target": "init__aa8d5bf682f243df227da3d5",
+      "content_id": "aa8d5bf682f243df227da3d5c7c611c126edeff76cd43290a196c6adfc1ab98b",
+      "compile_environment": "e61611403baf5a68af68fb49bf088ec4920d132726e84822c1833fb5d9799fab",
       "object": "init.o",
       "source": "init.c",
       "source_input_group": 4,
@@ -351,9 +351,9 @@
       "flags": ["-Wall"]
     },
     {
-      "target": "init__616062e1e392978c3108d304",
-      "content_id": "616062e1e392978c3108d3048bbac23cc55b3940dda003f6b34525d93b77cdf9",
-      "compile_environment": "71615c7d29e854e095c8c2a449e666ccdef4290eb77a0e9a20ed142c0893091e",
+      "target": "init__b9379f40eb2980fe2beb4763",
+      "content_id": "b9379f40eb2980fe2beb476371f96d077cf1d5e07e7e80f97d5f46128c8cbb27",
+      "compile_environment": "8df3ca943a843f61206bae352e0d43d1f2a83c272108c3ad9842bcfeb9baf2f8",
       "object": "init.o",
       "source": "init.c",
       "source_input_group": 4,
@@ -361,9 +361,9 @@
       "flags": ["-Wall", "-DNET=y"]
     },
     {
-      "target": "net_core__ec553a33e0c9ee1ed42f749b",
-      "content_id": "ec553a33e0c9ee1ed42f749b9148480e8c113def7d081e26626c4982bb183808",
-      "compile_environment": "71615c7d29e854e095c8c2a449e666ccdef4290eb77a0e9a20ed142c0893091e",
+      "target": "net_core__a7751c9df526695cbf397024",
+      "content_id": "a7751c9df526695cbf39702435eaea7e7da8c4b6906968565648ac3b6c2a9d42",
+      "compile_environment": "8df3ca943a843f61206bae352e0d43d1f2a83c272108c3ad9842bcfeb9baf2f8",
       "object": "net/core.o",
       "source": "net/core.c",
       "source_input_group": 5,

@@ -506,7 +506,7 @@ func TestLinuxLLVMProbeShellRejectsUnknownCompilerCandidate(t *testing.T) {
 	if err == nil {
 		t.Fatalf("shell(%q) unexpectedly succeeded", command)
 	}
-	for _, want := range []string{"-fbrand-new-kernel-flag", "x86_64", "llvm-22/capabilities-v1/x86_64"} {
+	for _, want := range []string{"-fbrand-new-kernel-flag", "x86_64", "llvm-22/capabilities-v2/x86_64"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Fatalf("shell(%q) error %q does not contain %q", command, err, want)
 		}

@@ -7,7 +7,7 @@ load(":path_mapping.bzl", "path_mapped_run")
 
 visibility("public")
 
-LinuxCompilerCapabilityInfo = provider(fields = {
+LinuxCompilerCapabilityInfo = provider("Compiler capability contract and its configured-toolchain check outputs.", fields = {
     "profile": "Selected static capability profile.",
     "compiler_version_text": "Modeled minimum Clang/LLD identity.",
     "files": "Compiler check artifacts required by kernel actions.",

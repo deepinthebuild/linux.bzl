@@ -1136,6 +1136,24 @@
       "candidate": [
         "-mbranch-protection=none"
       ],
+      "context": [
+        "-mgeneral-regs-only",
+        "-Wno-psabi",
+        "-fno-asynchronous-unwind-tables",
+        "-fno-unwind-tables"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/arm64/Makefile:92",
+        "arch/arm64/Makefile:95"
+      ]
+    },
+    {
+      "architecture": "aarch64",
+      "kind": "cc_option",
+      "candidate": [
+        "-mbranch-protection=none"
+      ],
       "supported": true,
       "locations": [
         "arch/arm64/kernel/pi/Makefile:4"
@@ -1957,6 +1975,22 @@
       ],
       "context": [
         "-mlittle-endian",
+        "-fno-dwarf2-cfi-asm",
+        "-mno-unaligned-access"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/arm/Makefile:60"
+      ]
+    },
+    {
+      "architecture": "armv7",
+      "kind": "cc_option",
+      "candidate": [
+        "-fno-ipa-sra"
+      ],
+      "context": [
+        "-mlittle-endian",
         "-fno-dwarf2-cfi-asm"
       ],
       "supported": false,
@@ -2541,6 +2575,23 @@
         "-mlittle-endian",
         "-D__LINUX_ARM_ARCH__=7",
         "-fno-dwarf2-cfi-asm",
+        "-mno-unaligned-access"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/arm/Makefile:151"
+      ]
+    },
+    {
+      "architecture": "armv7",
+      "kind": "cc_option",
+      "candidate": [
+        "-malignment-traps"
+      ],
+      "context": [
+        "-mlittle-endian",
+        "-D__LINUX_ARM_ARCH__=7",
+        "-fno-dwarf2-cfi-asm",
         "-mtp=cp15"
       ],
       "supported": false,
@@ -2631,6 +2682,20 @@
       "architecture": "armv7",
       "kind": "cc_option",
       "candidate": [
+        "-mno-unaligned-access"
+      ],
+      "context": [
+        "-fno-dwarf2-cfi-asm"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/arm/Makefile:34"
+      ]
+    },
+    {
+      "architecture": "armv7",
+      "kind": "cc_option",
+      "candidate": [
         "-mrecord-mcount"
       ],
       "supported": false,
@@ -2650,6 +2715,23 @@
         "-D__LINUX_ARM_ARCH__=6",
         "-fno-dwarf2-cfi-asm",
         "-mtp=cp15"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/arm/Makefile:151"
+      ]
+    },
+    {
+      "architecture": "armv7",
+      "kind": "cc_option",
+      "candidate": [
+        "-mshort-load-bytes"
+      ],
+      "context": [
+        "-mlittle-endian",
+        "-D__LINUX_ARM_ARCH__=7",
+        "-fno-dwarf2-cfi-asm",
+        "-mno-unaligned-access"
       ],
       "supported": false,
       "locations": [
@@ -4834,6 +4916,38 @@
       ],
       "context": [
         "-mabi=lp64",
+        "-march=rv64imac"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/riscv/Makefile:111",
+        "arch/riscv/Makefile:112"
+      ]
+    },
+    {
+      "architecture": "riscv64",
+      "kind": "as_option",
+      "candidate": [
+        "-Wa,-mno-arch-attr"
+      ],
+      "context": [
+        "-mabi=lp64",
+        "-march=rv64imac_zacas_zabha"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/riscv/Makefile:109",
+        "arch/riscv/Makefile:110"
+      ]
+    },
+    {
+      "architecture": "riscv64",
+      "kind": "as_option",
+      "candidate": [
+        "-Wa,-mno-arch-attr"
+      ],
+      "context": [
+        "-mabi=lp64",
         "-march=rv64imafdcv"
       ],
       "supported": false,
@@ -4867,6 +4981,36 @@
       "supported": false,
       "locations": [
         "arch/riscv/kernel/compat_vdso/Makefile:25"
+      ]
+    },
+    {
+      "architecture": "riscv64",
+      "kind": "as_option",
+      "candidate": [
+        "-Wa,-mno-relax"
+      ],
+      "context": [
+        "-mabi=lp64",
+        "-march=rv64imac"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/riscv/Makefile:115"
+      ]
+    },
+    {
+      "architecture": "riscv64",
+      "kind": "as_option",
+      "candidate": [
+        "-Wa,-mno-relax"
+      ],
+      "context": [
+        "-mabi=lp64",
+        "-march=rv64imac_zacas_zabha"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/riscv/Makefile:113"
       ]
     },
     {
@@ -7270,9 +7414,52 @@
         "-mno-sse2",
         "-mno-3dnow",
         "-mno-avx",
+        "-fcf-protection=none",
+        "-m64"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/x86/Makefile:164"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-falign-jumps=1"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
         "-mno-sse4a",
         "-fcf-protection=branch",
         "-fno-jump-tables",
+        "-m64"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/x86/Makefile:148"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-falign-jumps=1"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
+        "-mno-sse4a",
+        "-fcf-protection=none",
         "-m64"
       ],
       "supported": false,
@@ -7411,9 +7598,52 @@
         "-mno-sse2",
         "-mno-3dnow",
         "-mno-avx",
+        "-fcf-protection=none",
+        "-m64"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/x86/Makefile:167"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-falign-loops=1"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
         "-mno-sse4a",
         "-fcf-protection=branch",
         "-fno-jump-tables",
+        "-m64"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/x86/Makefile:151"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-falign-loops=1"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
+        "-mno-sse4a",
+        "-fcf-protection=none",
         "-m64"
       ],
       "supported": true,
@@ -7517,6 +7747,45 @@
       "locations": [
         "arch/x86/Kconfig:1766",
         "arch/x86/Kconfig:1839"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-fcf-protection=none"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
+        "-mno-sse4a"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/x86/Makefile:107"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-fcf-protection=none"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/x86/Makefile:118"
       ]
     },
     {
@@ -8399,6 +8668,35 @@
         "-mno-sse2",
         "-mno-3dnow",
         "-mno-avx",
+        "-fcf-protection=none",
+        "-m64",
+        "-falign-loops=1",
+        "-mno-80387",
+        "-mno-fp-ret-in-387",
+        "-mstack-alignment=8",
+        "-mskip-rax-setup",
+        "-mtune=generic",
+        "-mno-red-zone",
+        "-mcmodel=kernel"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/x86/Makefile:219"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-maccumulate-outgoing-args"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
         "-mno-sse4a",
         "-fcf-protection=branch",
         "-fno-jump-tables",
@@ -8413,6 +8711,37 @@
         "-mno-red-zone",
         "-mcmodel=kernel",
         "-mstack-protector-guard=global"
+      ],
+      "supported": false,
+      "locations": [
+        "arch/x86/Makefile:207"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-maccumulate-outgoing-args"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
+        "-mno-sse4a",
+        "-fcf-protection=none",
+        "-m64",
+        "-falign-loops=1",
+        "-mno-80387",
+        "-mno-fp-ret-in-387",
+        "-mstack-alignment=8",
+        "-mskip-rax-setup",
+        "-march=x86-64",
+        "-mtune=generic",
+        "-mno-red-zone",
+        "-mcmodel=kernel"
       ],
       "supported": false,
       "locations": [
@@ -8920,6 +9249,29 @@
         "-mno-sse2",
         "-mno-3dnow",
         "-mno-avx",
+        "-fcf-protection=none",
+        "-m64",
+        "-falign-loops=1",
+        "-mno-80387"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/x86/Makefile:171"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-mno-fp-ret-in-387"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
         "-mno-sse4a",
         "-m32",
         "-msoft-float",
@@ -9017,6 +9369,31 @@
         "-mno-avx",
         "-fcf-protection=branch",
         "-fno-jump-tables",
+        "-m64",
+        "-falign-loops=1",
+        "-mno-80387",
+        "-mno-fp-ret-in-387",
+        "-mstack-alignment=8"
+      ],
+      "supported": true,
+      "locations": [
+        "arch/x86/Makefile:183"
+      ]
+    },
+    {
+      "architecture": "x86_64",
+      "kind": "cc_option",
+      "candidate": [
+        "-mskip-rax-setup"
+      ],
+      "context": [
+        "-mstack-alignment=4",
+        "-mno-sse",
+        "-mno-mmx",
+        "-mno-sse2",
+        "-mno-3dnow",
+        "-mno-avx",
+        "-fcf-protection=none",
         "-m64",
         "-falign-loops=1",
         "-mno-80387",

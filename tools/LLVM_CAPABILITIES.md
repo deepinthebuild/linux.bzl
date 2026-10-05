@@ -29,7 +29,9 @@ python3 tools/llvm_capabilities.py --mode generate --profile llvm-22 \
 ```
 
 The collector evaluates Kconfig and active Kbuild files for the maintained
-architecture/config/overlay matrix in `llvm_capabilities.py`. It records fully
+architecture/config/overlay matrix in `llvm_capabilities.py`, in both `default`
+and `allnoconfig` modes, including the standalone CNIC and SONiC fragments.
+It records fully
 expanded probes, ordered compiler context, source locations, and measured
 answers. The option inventory preserves previously supported probe spellings;
 it contains no capability answers. The regression corpus retains additional
@@ -63,12 +65,12 @@ not a claim that all future releases cannot regress.
 
 `tests/static_generation` is a separate consuming module with a standard Bazel
 Linux/x86_64, aarch64, and armv7 platforms and no C++ toolchain registration. It verifies that generating
-a real Linux graph requires no repository-time compiler installation:
+real Linux graphs in both default and allnoconfig modes require no repository-time compiler installation:
 
 ```sh
 go build -o /tmp/kconfig_parse ./internal/cmd/kconfig_parse
 (cd tests/static_generation && bazel query \
-  "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json)" \
+  "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json @graph_allno//graph:metadata.json @graph_arm64_allno//graph:metadata.json)" \
   --repo_env=LINUX_BZL_KCONFIG_PARSE=/tmp/kconfig_parse)
 ```
 

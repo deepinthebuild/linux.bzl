@@ -1,7 +1,7 @@
 {
-  "llvm-19": {"minimum_clang": "19.1.0", "minimum_lld": "19.1.0", "model_revision": "capabilities-v1"},
-  "llvm-20": {"minimum_clang": "20.1.0", "minimum_lld": "20.1.0", "model_revision": "capabilities-v1"},
-  "llvm-21": {"minimum_clang": "21.1.0", "minimum_lld": "21.1.0", "model_revision": "capabilities-v1"},
-  "llvm-22": {"minimum_clang": "22.1.0", "minimum_lld": "22.1.0", "model_revision": "capabilities-v1"},
-  "llvm-23": {"minimum_clang": "23.1.0", "minimum_lld": "23.1.0", "model_revision": "capabilities-v1"}
+  "llvm-19": {"minimum_clang": "19.1.0", "minimum_lld": "19.1.0", "model_revision": "capabilities-v2"},
+  "llvm-20": {"minimum_clang": "20.1.0", "minimum_lld": "20.1.0", "model_revision": "capabilities-v2"},
+  "llvm-21": {"minimum_clang": "21.1.0", "minimum_lld": "21.1.0", "model_revision": "capabilities-v2"},
+  "llvm-22": {"minimum_clang": "22.1.0", "minimum_lld": "22.1.0", "model_revision": "capabilities-v2"},
+  "llvm-23": {"minimum_clang": "23.1.0", "minimum_lld": "23.1.0", "model_revision": "capabilities-v2"}
 }

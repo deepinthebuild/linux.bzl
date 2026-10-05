@@ -13,8 +13,8 @@ import tempfile
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 CONFIGS = {
-    "x86_64": ["e2e/tiny.config", "e2e/kvm.config", "e2e/rust.config", "examples/configs/x86_64.config"],
-    "aarch64": ["e2e/tiny_arm64.config", "e2e/kvm_arm64.config", "e2e/rust_arm64.config", "examples/configs/aarch64.config"],
+    "x86_64": ["e2e/tiny.config", "e2e/kvm.config", "e2e/rust.config", "e2e/cnic.config", "sonic_e2e/sonic.config", "examples/configs/x86_64.config"],
+    "aarch64": ["e2e/tiny_arm64.config", "e2e/kvm_arm64.config", "e2e/rust_arm64.config", "sonic_e2e/sonic.config", "examples/configs/aarch64.config"],
     "armv7": ["e2e/armv7.config"],
 }
 OVERLAYS = ["e2e/modversions.config", "e2e/srcversions.config", "e2e/verity.config", "e2e/cnic.config", "examples/configs/btf.config", "examples/configs/debug.config", "examples/configs/lz4.config"]

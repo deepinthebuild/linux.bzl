@@ -11,6 +11,7 @@ on:
       - 'internal/cmd/kconfig_parse/**'
       - 'tools/*llvm*'
       - 'e2e/*.config'
+      - 'sonic_e2e/*.config'
       - 'examples/configs/**'
       - '.github/workflows/llvm-capabilities.yml'
   push:
@@ -87,9 +88,9 @@ jobs:
           repository-cache: true
       - name: Generate graphs with the published archives
         working-directory: tests/static_generation
-        run: bazel query "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json)" --repo_env=LINUX_BZL_KCONFIG_PARSE=
+        run: bazel query "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json @graph_allno//graph:metadata.json @graph_arm64_allno//graph:metadata.json)" --repo_env=LINUX_BZL_KCONFIG_PARSE=
       - name: Generate graphs with the current source and no C++ toolchain
         run: |
           go build -o "$RUNNER_TEMP/kconfig_parse" ./internal/cmd/kconfig_parse
           cd tests/static_generation
-          bazel query "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json)" --repo_env=LINUX_BZL_KCONFIG_PARSE="$RUNNER_TEMP/kconfig_parse"
+          bazel query "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json @graph_allno//graph:metadata.json @graph_arm64_allno//graph:metadata.json)" --repo_env=LINUX_BZL_KCONFIG_PARSE="$RUNNER_TEMP/kconfig_parse"

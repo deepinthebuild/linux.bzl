@@ -21,7 +21,7 @@ func TestStaticLLVMProfilesUseConservativeVersionsWithoutTools(t *testing.T) {
 				if err != nil {
 					t.Fatal(err)
 				}
-				if got := capabilities.Identity(); got != name+"/capabilities-v1/"+arch {
+				if got := capabilities.Identity(); got != name+"/capabilities-v2/"+arch {
 					t.Fatal(got)
 				}
 				if got := capabilities.MinimumClangVersion().Encoded(); got != major*10000+100 {
@@ -109,7 +109,7 @@ func TestCompilerCheckEncodesFullFloor(t *testing.T) {
 	}
 	// The model revision changes cache identity independently of the version floor.
 	before := profile.Identity("x86_64")
-	profile.ModelRevision = "capabilities-v2"
+	profile.ModelRevision = "capabilities-next"
 	if profile.Identity("x86_64") == before || profile.CompilerCheckSource() != source {
 		t.Fatal("model revision coupled to compiler version")
 	}
@@ -191,5 +191,57 @@ func TestCapabilityContextPathsDoNotAffectIdentity(t *testing.T) {
 	}
 	if first.Key() != second.Key() {
 		t.Fatal("repository path leaked into capability identity")
+	}
+}
+
+func TestCapabilityCollectorCoversBothConfigModes(t *testing.T) {
+	root := t.TempDir()
+	for name, content := range map[string]string{
+		"Kconfig":           "config OPTIMIZE\n\tbool \"optimize\"\n\tdefault y\n",
+		"arch/x86/Makefile": "# fixture\n",
+		"Kbuild":            "ifeq ($(CONFIG_OPTIMIZE),y)\nKBUILD_CFLAGS += $(call cc-option,-m64)\nelse\nKBUILD_CFLAGS += $(call cc-option,-m32)\nendif\n",
+	} {
+		path := filepath.Join(root, name)
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	capabilities, err := StaticLLVMCapabilities("llvm-22", "x86_64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	recorder := &RecordingCapabilities{CompilerCapabilities: capabilities, Architecture: "x86_64", Root: root}
+	if err := CollectLinuxCapabilities(context.Background(), root, "x86_64", nil, recorder); err != nil {
+		t.Fatal(err)
+	}
+	seen := map[string]bool{}
+	for _, record := range recorder.Records() {
+		seen[strings.Join(record.Candidate, " ")] = true
+	}
+	if !seen["-m64"] || !seen["-m32"] {
+		t.Fatalf("collector missed a configuration mode: %v", seen)
+	}
+}
+
+func TestStaticLLVMAllNoConfigProbeContexts(t *testing.T) {
+	for _, arch := range []string{"x86_64", "aarch64"} {
+		for major := 19; major <= 23; major++ {
+			capabilities, err := StaticLLVMCapabilities(fmt.Sprintf("llvm-%d", major), arch)
+			if err != nil {
+				t.Fatal(err)
+			}
+			candidate := []string{"-fcf-protection=none"}
+			flags := []string{"-mstack-alignment=4", "-mno-sse", "-mno-mmx", "-mno-sse2", "-mno-3dnow", "-mno-avx", "-mno-sse4a"}
+			if arch == "aarch64" {
+				candidate = []string{"-mbranch-protection=none"}
+				flags = []string{"-mgeneral-regs-only", "-Wno-psabi", "-fno-asynchronous-unwind-tables", "-fno-unwind-tables"}
+			}
+			if ok, err := capabilities.SupportsOption(context.Background(), "cc_option", candidate, flags); err != nil || !ok {
+				t.Fatalf("%s: allnoconfig probe: %v, %v", capabilities.Identity(), ok, err)
+			}
+		}
 	}
 }

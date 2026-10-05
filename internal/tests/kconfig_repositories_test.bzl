@@ -137,9 +137,9 @@ def _metadata_key_validation_test_impl(ctx):
         "schema": "compact-v9-llvm-capabilities",
         "target": {
             "linux_arch": "x86",
-            "capability_identity": "llvm-22/capabilities-v1/x86_64",
+            "capability_identity": "llvm-22/capabilities-v2/x86_64",
             "llvm_capability_profile": "llvm-22",
-            "capability_model": "capabilities-v1",
+            "capability_model": "capabilities-v2",
             "minimum_clang": 220100,
             "minimum_lld": 220100,
             "profile": "x86_64",
@@ -230,9 +230,9 @@ def _metadata_key_validation_test_impl(ctx):
         "schema": "compact-v9-llvm-capabilities",
         "target": {
             "linux_arch": "x86",
-            "capability_identity": "llvm-22/capabilities-v1/x86_64",
+            "capability_identity": "llvm-22/capabilities-v2/x86_64",
             "llvm_capability_profile": "llvm-22",
-            "capability_model": "capabilities-v1",
+            "capability_model": "capabilities-v2",
             "minimum_clang": 220100,
             "minimum_lld": 220100,
             "profile": "x86_64",
@@ -659,7 +659,7 @@ def compile_environment_abi_test(name):
     _compile_environment_abi_subject(
         name = subject,
         actual = "unexpected-abi",
-        expected = "linux.bzl/compact-v9/x86/x86/llvm-22/capabilities-v1/x86_64",
+        expected = "linux.bzl/compact-v9/x86/x86/llvm-22/capabilities-v2/x86_64",
         tags = ["manual"],
     )
     _compile_environment_abi_failure_test(

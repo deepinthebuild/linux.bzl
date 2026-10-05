@@ -56,3 +56,23 @@ use_repo(
     graph_arm64 = "kernel_arm64__linux_graph__aarch64",
     graph_armv7 = "kernel_armv7__linux_graph__armv7",
 )
+
+images.image(
+    name = "kernel_allno",
+    config = "//:kernel.config",
+    config_mode = "allnoconfig",
+    platform = "//:linux_x86_64",
+    source = "@linux_source//:Kconfig",
+)
+images.image(
+    name = "kernel_arm64_allno",
+    config = "//:kernel.config",
+    config_mode = "allnoconfig",
+    platform = "//:linux_aarch64",
+    source = "@linux_source//:Kconfig",
+)
+use_repo(
+    images,
+    graph_allno = "kernel_allno__linux_graph__x86_64",
+    graph_arm64_allno = "kernel_arm64_allno__linux_graph__aarch64",
+)

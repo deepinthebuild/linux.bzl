@@ -203,30 +203,32 @@ func CollectLinuxCapabilities(ctx context.Context, root, architecture string, co
 	if len(configs) == 0 {
 		configs = []map[string]string{{}}
 	}
-	for index, raw := range configs {
-		prepared, err := profile.PrepareTargetConfig(raw)
-		if err != nil {
-			return err
-		}
-		resolved, err := tree.ResolveConfig(fmt.Sprintf("capability-corpus-%d", index), prepared)
-		if err != nil {
-			return err
-		}
-		kbvars := cloneStringMap(vars)
-		kbvars["comma"] = ","
-		for name, value := range resolved.Effective {
-			if !resolved.ShouldWrite(name) || value == "n" {
-				kbvars[name] = ""
-				continue
+	for _, allNoConfig := range []bool{false, true} {
+		for index, raw := range configs {
+			prepared, err := profile.PrepareTargetConfig(raw)
+			if err != nil {
+				return err
 			}
-			if len(value) >= 2 && value[0] == '"' && value[len(value)-1] == '"' {
-				value = value[1 : len(value)-1]
+			resolved, err := tree.ResolveConfigWithOptions(fmt.Sprintf("capability-corpus-%d", index), prepared, ResolveConfigOptions{AllNoConfig: allNoConfig})
+			if err != nil {
+				return err
 			}
-			kbvars[name] = value
-		}
-		_, err = ParseKbuildDirectoryTree(filepath.Join(root, "Kbuild"), KbuildOptions{RootDir: root, RootMakefiles: []string{filepath.Join("arch", profile.Srcarch, "Makefile")}, Variables: kbvars, ConfigVariablesComplete: true, Capabilities: capabilities})
-		if err != nil {
-			return fmt.Errorf("config %d: %w", index, err)
+			kbvars := cloneStringMap(vars)
+			kbvars["comma"] = ","
+			for name, value := range resolved.Effective {
+				if !resolved.ShouldWrite(name) || value == "n" {
+					kbvars[name] = ""
+					continue
+				}
+				if len(value) >= 2 && value[0] == '"' && value[len(value)-1] == '"' {
+					value = value[1 : len(value)-1]
+				}
+				kbvars[name] = value
+			}
+			_, err = ParseKbuildDirectoryTree(filepath.Join(root, "Kbuild"), KbuildOptions{RootDir: root, RootMakefiles: []string{filepath.Join("arch", profile.Srcarch, "Makefile")}, Variables: kbvars, ConfigVariablesComplete: true, Capabilities: capabilities})
+			if err != nil {
+				return fmt.Errorf("config %d (allnoconfig=%t): %w", index, allNoConfig, err)
+			}
 		}
 	}
 	return nil

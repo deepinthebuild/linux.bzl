@@ -23,8 +23,15 @@ jobs:
           BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
         run: .github/workflows/build_kconfig_prebuilts.sh
 
-      - name: Release
+      - name: Verify an already published release
+        id: published
         if: startsWith(github.ref, 'refs/tags/kconfig-v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/workflows/verify_kconfig_release.sh
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/kconfig-v') && steps.published.outputs.exists != 'true'
         uses: softprops/action-gh-release@v2
         with:
           files: |

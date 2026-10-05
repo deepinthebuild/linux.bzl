@@ -593,7 +593,7 @@ is a development dependency of linux.bzl, and other LLVM distributions can
 supply the same C++ toolchain contract.
 
 Graph cache identities include the profile, independently versioned capability
-model, and architecture, such as `llvm-22/capabilities-v1/x86_64`. Changing a
+model, and architecture, such as `llvm-22/capabilities-v2/x86_64`. Changing a
 profile's floor or modeled answers requires a model revision bump. The metadata
 protocol is `compact-v9-llvm-capabilities`; older generator binaries are rejected.
 

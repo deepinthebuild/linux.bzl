@@ -72,10 +72,10 @@ def llvm_capabilities_test_suite(name):
         name = name + "_index",
         arch = "x86",
         compiler_check = ":" + check,
-        expected_abi = "test/llvm-22/capabilities-v1/x86_64",
+        expected_abi = "test/llvm-22/capabilities-v2/x86_64",
         config_payloads = {payload_id: "CONFIG_X86_64=y\n"},
         compile_environments = {environment_id: json.encode({
-            "abi": "test/llvm-22/capabilities-v1/x86_64",
+            "abi": "test/llvm-22/capabilities-v2/x86_64",
             "config_payload": payload_id,
             "generated_header_families": [],
         })},
