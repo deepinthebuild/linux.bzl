@@ -85,7 +85,10 @@ jobs:
         with:
           bazelisk-cache: true
           repository-cache: true
-      - name: Generate a graph without registering a C++ toolchain
+      - name: Generate graphs with the published archives
+        working-directory: tests/static_generation
+        run: bazel query "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json)" --repo_env=LINUX_BZL_KCONFIG_PARSE=
+      - name: Generate graphs with the current source and no C++ toolchain
         run: |
           go build -o "$RUNNER_TEMP/kconfig_parse" ./internal/cmd/kconfig_parse
           cd tests/static_generation

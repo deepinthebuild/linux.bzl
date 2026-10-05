@@ -11,8 +11,11 @@ overlays. The graph contains exact source-input digests, indexed config
 payloads and generated-header families, and canonical base/delta image rules.
 The rules repository pins the generator release that defines this format; the
 CLI and repository rule do not negotiate schemas or retain older emitters.
-The current `compact-v8-adaptive-content-graph` schema also records the exact
-`__GENKSYMS__` source closure and compile flags for basic module versioning.
+The current `compact-v9-llvm-capabilities` schema records the selected LLVM
+capability profile, model revision, and minimum Clang/LLD versions, alongside
+the exact `__GENKSYMS__` source closure and compile flags for basic module
+versioning. The generator embeds the static capability tables and does not
+execute a compiler or linker during repository generation.
 
 The same binary emits the source-derived `linux-rust-profile-v2` JSON profile
 and config-sensitive KASAN/KCSAN/UBSAN instrumentation flags, including Kbuild

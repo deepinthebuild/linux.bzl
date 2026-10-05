@@ -604,8 +604,12 @@ inputs and content identities, and checks every generated-header family and
 compile environment before exposing the graph. The generator never consumes a
 build output, which keeps module resolution valid and reproducible.
 
-For local development before matching generator release binaries are published,
-build the generator from this checkout and provide its absolute path:
+The capability-profile generator archives are available for all six supported
+host platforms in the [fork prerelease](https://github.com/deepinthebuild/linux.bzl/releases/tag/kconfig-v0.0.25-llvm-capabilities.1).
+The checked-in download table pins these archives and their integrity values;
+no local generator override is needed.
+
+For generator development, build from this checkout and provide its absolute path:
 
 ```sh
 go build -o "$PWD/kconfig_parse" ./internal/cmd/kconfig_parse
@@ -613,9 +617,7 @@ bazel build --repo_env=LINUX_BZL_KCONFIG_PARSE="$PWD/kconfig_parse" @my_kernel//
 ```
 
 The repository rule watches this explicit override and checks its protocol.
-The pinned released generator must be rebuilt and published for this protocol
-before distributing the updated rules without an override. Repository
-generation never executes Clang or LLD. The offline measurement workflow is
+Repository generation never executes Clang or LLD. The offline measurement workflow is
 documented in [tools/LLVM_CAPABILITIES.md](tools/LLVM_CAPABILITIES.md).
 
 The build does not read ambient host tools or environment variables. All tools

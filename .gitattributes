@@ -1,1 +1,2 @@
 aya_e2e/patches/*.patch -whitespace
+internal/kconfig/llvm_capabilities/*.json linguist-generated=true

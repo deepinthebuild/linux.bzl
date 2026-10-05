@@ -833,7 +833,7 @@ def _host_platform(rctx):
 def _validate_generator_protocol(rctx, tool):
     result = rctx.execute([str(tool), "-generator_protocol"], quiet = True)
     if result.return_code != 0 or result.stdout.strip() != _REPOSITORY_GENERATOR_PROTOCOL:
-        fail("Generator must support %s. Build the local generator and set --repo_env=LINUX_BZL_KCONFIG_PARSE=/absolute/path/to/kconfig_parse until matching release binaries are published." % _REPOSITORY_GENERATOR_PROTOCOL)
+        fail("Generator must support %s. Use the pinned release, or rebuild the local generator supplied through LINUX_BZL_KCONFIG_PARSE from this checkout." % _REPOSITORY_GENERATOR_PROTOCOL)
 
 def _llvm_version_code(version):
     major, minor, patch = [int(value) for value in version.split(".")]
