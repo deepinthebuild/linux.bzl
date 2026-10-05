@@ -5,7 +5,7 @@ Each archive must extract the requested host executables at its root.
 
 visibility("//...")
 
-KCONFIG_TOOL_VERSION = "v0.0.25-llvm-capabilities.1"
+KCONFIG_TOOL_VERSION = "v0.0.25-llvm-capabilities.2"
 
 _RELEASE_BASE_URL = "https://github.com/deepinthebuild/linux.bzl/releases/download/kconfig-{version}".format(
     version = KCONFIG_TOOL_VERSION,
@@ -13,27 +13,27 @@ _RELEASE_BASE_URL = "https://github.com/deepinthebuild/linux.bzl/releases/downlo
 
 KCONFIG_TOOL_RELEASES = {
     "darwin_amd64": struct(
-        integrity = "sha256-PLqZangZosWb0b/RCbAD5BELLfi88xL+J7zImrKmZNw=",
+        integrity = "sha256-1ASx7r/JCWpkPhsr2RU1f7kG70ynVPzoZfmHXCySCM0=",
         urls = ["{}/kconfig-darwin-amd64.tar.zst".format(_RELEASE_BASE_URL)],
     ),
     "darwin_arm64": struct(
-        integrity = "sha256-kTpUp/XF5rlaOOzZZ3v0oAhxQYFmsK/d7FhQY3OPm+o=",
+        integrity = "sha256-1ekvCRKNHS3BPzVGpyHoeeBSQ6Un7dMMAe0mt2M8Fns=",
         urls = ["{}/kconfig-darwin-arm64.tar.zst".format(_RELEASE_BASE_URL)],
     ),
     "linux_amd64": struct(
-        integrity = "sha256-mb4Mpxb9woDk0P89nJB4rN/4uz8TiK5Xp1HcbxnvkP4=",
+        integrity = "sha256-dqWHeH6EWw9ZyVSgP59wqLqrowNccumh3+Qa2rSm1fk=",
         urls = ["{}/kconfig-linux-amd64.tar.zst".format(_RELEASE_BASE_URL)],
     ),
     "linux_arm64": struct(
-        integrity = "sha256-gejUk0i3OXwCtxZBzvWkVxEnBrTA777E+IPNsn8xvkA=",
+        integrity = "sha256-TEACpSmBpmhWrto/4CrWUhdcIXV+I3UHf870+PxrtZE=",
         urls = ["{}/kconfig-linux-arm64.tar.zst".format(_RELEASE_BASE_URL)],
     ),
     "windows_amd64": struct(
-        integrity = "sha256-RurDimKUv38zgM2+++/klIzb8fmUenyEFAFiG9t+7xM=",
+        integrity = "sha256-quIgLGHleZeTPeHM12z6yl103SHiytwLydCP5N63XgA=",
         urls = ["{}/kconfig-windows-amd64.tar.zst".format(_RELEASE_BASE_URL)],
     ),
     "windows_arm64": struct(
-        integrity = "sha256-dWfTp1Hcrq37iqyq6/gJy5Zc4HTQNnF6QjkkFUgRLSs=",
+        integrity = "sha256-+uS0JMXBDIocC2cp8xzHhyDbR41LwjSUjpEMRU8jzD0=",
         urls = ["{}/kconfig-windows-arm64.tar.zst".format(_RELEASE_BASE_URL)],
     ),
 }

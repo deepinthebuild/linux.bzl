@@ -605,7 +605,7 @@ compile environment before exposing the graph. The generator never consumes a
 build output, which keeps module resolution valid and reproducible.
 
 The capability-profile generator archives are available for all six supported
-host platforms in the [fork prerelease](https://github.com/deepinthebuild/linux.bzl/releases/tag/kconfig-v0.0.25-llvm-capabilities.1).
+host platforms in the [fork prerelease](https://github.com/deepinthebuild/linux.bzl/releases/tag/kconfig-v0.0.25-llvm-capabilities.2).
 The checked-in download table pins these archives and their integrity values;
 no local generator override is needed.
 
