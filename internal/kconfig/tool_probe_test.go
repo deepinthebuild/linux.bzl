@@ -220,18 +220,22 @@ func TestLinuxToolProbeAllowsARMAPCSMachineFlag(t *testing.T) {
 	}
 }
 
-func TestLinuxToolProbeRejectsUnpinnedVersion(t *testing.T) {
+func TestLinuxToolProbeAcceptsIndependentReferenceVersions(t *testing.T) {
 	dir := t.TempDir()
 	clang := filepath.Join(dir, "clang")
 	lld := filepath.Join(dir, "ld.lld")
 	writeProbeTool(t, clang, "clang version 21.1.8", filepath.Join(dir, "count"))
 	writeProbeTool(t, lld, "LLD 22.1.8", filepath.Join(dir, "count"))
-	_, err := NewLinuxToolProbe(LinuxToolProbeOptions{
+	probe, err := NewLinuxToolProbe(LinuxToolProbeOptions{
 		Profile: "x86_64", Architecture: "x86", TargetTriple: "x86_64-linux-gnu",
 		ClangPath: clang, LLDPath: lld,
 	})
-	if err == nil || !strings.Contains(err.Error(), "want pinned LLVM") {
+	if err != nil {
 		t.Fatalf("NewLinuxToolProbe() error = %v", err)
+	}
+	measured := MeasuredLLVMCapabilities{Probe: probe}
+	if measured.MinimumClangVersion().Encoded() != 210108 || measured.MinimumLLDVersion().Encoded() != 220108 {
+		t.Fatal("measured tools lost their independent full versions")
 	}
 }
 
@@ -460,5 +464,13 @@ func TestKnownRELRProbeAcceptsPinnedToolPaths(t *testing.T) {
 	command := `env "CC=/pinned/bin/clang" "LD=/pinned/bin/ld.lld" "NM=llvm-nm" "OBJCOPY=llvm-objcopy" /src/scripts/tools-support-relr.sh`
 	if !isKnownRELRProbe(command) {
 		t.Fatalf("isKnownRELRProbe(%q) = false", command)
+	}
+}
+
+func TestLLVMReferenceVersionRequiresTheRightTool(t *testing.T) {
+	for _, test := range []struct{ output, tool string }{{"LLD 22.1.0", "clang"}, {"clang version 22.1.0", "LLD"}, {"gcc (GCC) 22.1.0", "clang"}} {
+		if _, _, err := parseLLVMVersion(test.output, test.tool); err == nil {
+			t.Fatalf("accepted %q as %s", test.output, test.tool)
+		}
 	}
 }

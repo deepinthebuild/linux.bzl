@@ -30,10 +30,10 @@ func TestLinuxLLVMProbePolicy(t *testing.T) {
 		command string
 		want    string
 	}{
-		{command: "/src/scripts/cc-version.sh clang", want: "Clang 220108"},
-		{command: "clang --version", want: "clang version 22.1.8None"},
+		{command: "/src/scripts/cc-version.sh clang", want: "Clang 220100"},
+		{command: "clang --version", want: "clang version 22.1.0"},
 		{command: "/src/scripts/as-version.sh clang -fintegrated-as", want: "LLVM 0"},
-		{command: "/src/scripts/ld-version.sh ld.lld", want: "LLD 220108"},
+		{command: "/src/scripts/ld-version.sh ld.lld", want: "LLD 220100"},
 		{command: "/src/scripts/pahole-version.sh pahole", want: "131"},
 		{command: "bindgen --version workaround-for-0.69.0 2>/dev/null", want: "bindgen 0.72.1"},
 		{command: "/src/scripts/rustc-version.sh rustc", want: "109700"},
@@ -161,7 +161,6 @@ func TestLinuxLLVMProbeShellSupportsLLVMNmAndArProbes(t *testing.T) {
 		"llvm-nm --help | head -n 1 | grep -qi llvm",
 		"llvm-ar --help | head -n 1 | grep -qi llvm",
 		`ld.lld -v --gc-sections`,
-		`printf "%b\n" ".arch_extension lse" | clang -fintegrated-as -Wa,--fatal-warnings -c -x assembler-with-cpp -o /dev/null -`,
 		`echo 'int __seg_fs fs; int __seg_gs gs;' | clang -x c - -S -o /dev/null`,
 	} {
 		out, err := shell(context.Background(), "{ "+command+"; } >/dev/null 2>&1 && echo \"y\" || echo \"n\"")
@@ -230,7 +229,7 @@ func TestLinuxLLVMProbeShellHandlesCanonicalM32PreprocessorProbeByProfile(t *tes
 	for profile, want := range map[string]string{
 		"x86_64":  "y",
 		"aarch64": "n",
-		"armv7":   "y",
+		"armv7":   "y", // Clang accepts -m64 by switching the target to AArch64.
 		"riscv64": "y",
 		"ppc64le": "y",
 	} {
@@ -249,7 +248,7 @@ func TestLinuxLLVMProbeShellHandlesCanonicalM64PreprocessorProbeByProfile(t *tes
 	for profile, want := range map[string]string{
 		"x86_64":  "y",
 		"aarch64": "y",
-		"armv7":   "n",
+		"armv7":   "y",
 		"riscv64": "y",
 		"ppc64le": "y",
 	} {
@@ -287,7 +286,7 @@ func TestLinuxLLVMProbeShellHandlesGroupedARMStackGuardProbeByProfile(t *testing
 	for profile, want := range map[string]string{
 		"x86_64":  "n",
 		"aarch64": "n",
-		"armv7":   "y",
+		"armv7":   "n", // The bare arm-linux-gnueabi target does not imply ARMv7 CPU flags.
 		"riscv64": "n",
 		"ppc64le": "n",
 	} {
@@ -397,11 +396,11 @@ func TestLinuxLLVMProbeShellSupportsExactPPC64LEKconfigCandidates(t *testing.T) 
 			t.Errorf("shell(%q) = %q, %v; want y", command, got, err)
 		}
 	}
-	const unsupportedPPC32Guard = "-m32 -mstack-protector-guard=tls -mstack-protector-guard-reg=r2 -mstack-protector-guard-offset=0"
-	command := `{ clang -Werror -fintegrated-as ` + unsupportedPPC32Guard + ` -c -x c /dev/null -o .tmp.o; } >/dev/null 2>&1 && echo "y" || echo "n"`
+	const ppc32Guard = "-m32 -mstack-protector-guard=tls -mstack-protector-guard-reg=r2 -mstack-protector-guard-offset=0"
+	command := `{ clang -Werror -fintegrated-as ` + ppc32Guard + ` -c -x c /dev/null -o .tmp.o; } >/dev/null 2>&1 && echo "y" || echo "n"`
 	got, err := shell(context.Background(), command)
-	if err != nil || got != "n" {
-		t.Errorf("shell(%q) = %q, %v; want n", command, got, err)
+	if err != nil || got != "y" {
+		t.Errorf("shell(%q) = %q, %v; want y", command, got, err)
 	}
 }
 
@@ -418,7 +417,7 @@ func TestLinuxProbeShellKeepsCompilerAndHostFactsFixed(t *testing.T) {
 		{
 			name:    "linker version",
 			command: "/src/scripts/ld-version.sh ld.lld",
-			want:    "LLD 220108",
+			want:    "LLD 220100",
 		},
 		{
 			name:    "pahole version",
@@ -507,7 +506,7 @@ func TestLinuxLLVMProbeShellRejectsUnknownCompilerCandidate(t *testing.T) {
 	if err == nil {
 		t.Fatalf("shell(%q) unexpectedly succeeded", command)
 	}
-	for _, want := range []string{"-fbrand-new-kernel-flag", "x86_64", "Clang 22.1.8"} {
+	for _, want := range []string{"-fbrand-new-kernel-flag", "x86_64", "llvm-22/capabilities-v1/x86_64"} {
 		if !strings.Contains(err.Error(), want) {
 			t.Fatalf("shell(%q) error %q does not contain %q", command, err, want)
 		}

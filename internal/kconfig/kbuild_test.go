@@ -315,7 +315,7 @@ CFLAGS_core.o := $(call cc-option,-falign-jumps=1) \
 	}
 	kb, err := ParseKbuildFileWithOptions(kbuild, KbuildOptions{
 		Variables: map[string]string{
-			"KBUILD_CFLAGS": "-mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -mno-sse4a $(call cc-option,-fcf-protection=branch -fno-jump-tables) $(call cc-option,-fcf-protection=none) -m32 -msoft-float -mregparm=3 -freg-struct-return -fno-pic $(cc_stack_align4) $(cflags-y) -ffreestanding -m64",
+			"KBUILD_CFLAGS": "-m64",
 			"SRCARCH":       "x86",
 		},
 	})
@@ -557,8 +557,8 @@ CFLAGS_core.o := $(call cc-option,-fbrand-new-kernel-flag)
 	for _, want := range []string{
 		"Kbuild:2",
 		"-fbrand-new-kernel-flag",
-		`architecture "x86_64"`,
-		`context "-Werror -m64"`,
+		`"architecture":"x86_64"`,
+		`"context":["-m64"]`,
 	} {
 		if !strings.Contains(err.Error(), want) {
 			t.Fatalf("unknown-candidate error %q does not contain %q", err, want)

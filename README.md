@@ -130,6 +130,7 @@ surface:
 | `config` | Base Kconfig fragment |
 | `config_mode` | Kconfig baseline: `default` or `allnoconfig` |
 | `platform` | Linux x86_64, aarch64, or armv7 target platform selecting Clang |
+| `llvm_capability_profile` | Static LLVM compatibility contract; defaults to `llvm-22` (supported: `llvm-19` through `llvm-23`) |
 
 `linux_images.overlay` adds a named config fragment to an image:
 
@@ -145,8 +146,8 @@ constraint: x86_64, aarch64, or armv7. The base config does not need to repeat
 `CONFIG_X86`, `CONFIG_X86_64`, `CONFIG_ARM64`, or `CONFIG_ARM`; repository
 generation supplies the platform-selected architecture to Kconfig. An explicit architecture
 selection or unset that contradicts the platform is rejected. The platform
-also selects a matching LLVM/Clang toolchain, which must expose `llvm-nm` and
-`llvm-objcopy` through `CcToolchainInfo.all_files`. Repository and platform
+also selects a matching LLVM/Clang toolchain, which must expose `ld.lld`,
+`llvm-ar`, `llvm-nm`, and `llvm-objcopy` through `CcToolchainInfo.all_files`. Repository and platform
 labels may be renamed. There are no public graph-profile, explicit Kbuild
 linker, compiler-path, host-probe, image-format, or signing-key attributes.
 Import each declared facade repository explicitly with `use_repo`.
@@ -374,7 +375,7 @@ config architecture that disagrees with the platform-selected target profile.
 | Catalog releases | 6.12.96 and 6.18.39 |
 | Target architectures | x86_64, aarch64, and armv7, inferred from the target platform |
 | Repository evaluation | Pinned generator archives for Linux, macOS, and Windows on amd64 and arm64 |
-| Build toolchain | Clang with LLVM 22.1.8 baseline semantics from the published Hermetic LLVM release |
+| Build toolchain | Clang and compatible LLVM utilities satisfying the selected capability profile (default: LLVM 22.1.0 or newer) |
 | Images | x86_64 `bzImage`, aarch64 `Image`, and armv7 `zImage` |
 | Config variants | Base fragment plus named overlay fragments |
 | Initramfs | Deterministic root-owned `newc` archives |
@@ -567,13 +568,34 @@ Linux OS constraint and exactly one of the x86_64, aarch64, or armv7 CPU
 constraints, and it must select a matching LLVM/Clang toolchain.
 The extension applies that platform transition once at the public facade,
 selects only the corresponding architecture graph, and leaves the selected
-private graph transition-free. Analysis rejects non-Clang compilers,
-contradictory config architecture assignments, and toolchains that do not
-expose `llvm-nm` and `llvm-objcopy` through `CcToolchainInfo.all_files`. The
-supported toolchain uses LLVM 22.1.8 from the published Hermetic LLVM release
-referenced in the quick start. Repository and platform
-labels may be renamed, but using another LLVM packaging or version is outside
-the supported contract.
+private graph transition-free. Analysis rejects contradictory config architecture assignments and toolchains
+that do not expose `ld.lld`, `llvm-ar`, `llvm-nm`, and `llvm-objcopy` through
+`CcToolchainInfo.all_files`. A generated C assertion is compiled by the same
+configured C++ toolchain as the kernel. It rejects non-Clang compilers and
+Clang versions below the selected profile's full major/minor/patch floor.
+Configuration materialization and kernel compilation depend on this assertion.
+
+Repository generation uses a static `llvm_capability_profile`, independently
+of the target architecture. Profiles `llvm-19` through `llvm-23` currently have
+Clang and LLD floors of `19.1.0` through `23.1.0`, respectively. The default is
+`llvm-22`. For example, selecting `llvm-22` makes Kconfig see
+`CONFIG_CLANG_VERSION=220100` and `CONFIG_LLD_VERSION=220100`, even when Bazel
+selects Clang 22.1.8 or a newer major. Newer compilers may build against an older
+profile; graph generation uses only that profile's modeled capabilities.
+Unknown option, source, or assembler probes fail closed with their inputs and
+profile identity. A version floor alone never implies arbitrary feature support.
+
+The configured toolchain must guarantee compatible LLVM utilities and an LLD
+version at least as new as the profile's LLD floor. The C assertion checks
+Clang's version macros; it does not measure LLD. Hermetic LLVM, used in the quick
+start and this repository's development tests, is one compatible provider. It
+is a development dependency of linux.bzl, and other LLVM distributions can
+supply the same C++ toolchain contract.
+
+Graph cache identities include the profile, independently versioned capability
+model, and architecture, such as `llvm-22/capabilities-v1/x86_64`. Changing a
+profile's floor or modeled answers requires a model revision bump. The metadata
+protocol is `compact-v9-llvm-capabilities`; older generator binaries are rejected.
 
 Repository generation downloads the platform-specific, integrity-pinned
 Kconfig graph generator selected by the rules release's checked-in table. The
@@ -581,6 +603,20 @@ Starlark rule requires indexed content-graph metadata, verifies exact source
 inputs and content identities, and checks every generated-header family and
 compile environment before exposing the graph. The generator never consumes a
 build output, which keeps module resolution valid and reproducible.
+
+For local development before matching generator release binaries are published,
+build the generator from this checkout and provide its absolute path:
+
+```sh
+go build -o "$PWD/kconfig_parse" ./internal/cmd/kconfig_parse
+bazel build --repo_env=LINUX_BZL_KCONFIG_PARSE="$PWD/kconfig_parse" @my_kernel//:image
+```
+
+The repository rule watches this explicit override and checks its protocol.
+The pinned released generator must be rebuilt and published for this protocol
+before distributing the updated rules without an override. Repository
+generation never executes Clang or LLD. The offline measurement workflow is
+documented in [tools/LLVM_CAPABILITIES.md](tools/LLVM_CAPABILITIES.md).
 
 The build does not read ambient host tools or environment variables. All tools
 are Bazel inputs, temporary paths are action-local, timestamps and release

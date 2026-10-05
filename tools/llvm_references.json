@@ -1,0 +1,52 @@
+{
+  "19.1.0": {
+    "sha256": "cee77d641690466a193d9b88c89705de1c02bbad46bde6a3b126793c0a0f2923",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.0/LLVM-19.1.0-Linux-X64.tar.xz",
+    "version": "19.1.0"
+  },
+  "19.1.7": {
+    "sha256": "4a5ec53951a584ed36f80240f6fbf8fdd46b4cf6c7ee87cc2d5018dc37caf679",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz",
+    "version": "19.1.7"
+  },
+  "20.1.0": {
+    "sha256": "954ac51498519f6ed9540714fb04bc401f70039b296a8160dd1559be380788d7",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.0/LLVM-20.1.0-Linux-X64.tar.xz",
+    "version": "20.1.0"
+  },
+  "20.1.8": {
+    "sha256": "1ead36b3dfcb774b57be530df42bec70ab2d239fbce9889447c7a29a4ddc1ae6",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-20.1.8/LLVM-20.1.8-Linux-X64.tar.xz",
+    "version": "20.1.8"
+  },
+  "21.1.0": {
+    "sha256": "4a8c4b07646a4a2eb76ccf1d73522c3e13519745b72ef09d631c09b7577b0ed2",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.0/LLVM-21.1.0-Linux-X64.tar.xz",
+    "version": "21.1.0"
+  },
+  "21.1.8": {
+    "sha256": "b3b7f2801d15d50736acea3c73982994d025b01c2f035b91ae3b49d1b575732b",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-21.1.8/LLVM-21.1.8-Linux-X64.tar.xz",
+    "version": "21.1.8"
+  },
+  "22.1.0": {
+    "sha256": "8d662e425e46c48b45f5f970770b5e37f323607c8c2cbc371593fc9c4ba1e7b3",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.0/LLVM-22.1.0-Linux-X64.tar.xz",
+    "version": "22.1.0"
+  },
+  "22.1.8": {
+    "sha256": "df0e1ecf16caf3489a272a5eea4eec9b0d82878f6477fa309504f918a0006384",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-22.1.8/LLVM-22.1.8-Linux-X64.tar.xz",
+    "version": "22.1.8"
+  },
+  "23.1.0": {
+    "sha256": "18da30f77f475688a18f7704d23f9f155ae007ed9922dbed6850a9419d9fec8c",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.0/LLVM-23.1.0-Linux-X64.tar.xz",
+    "version": "23.1.0"
+  },
+  "23.1.2": {
+    "sha256": "b5ed9675149cc837c282e9b6962c276c9fa62863d5b2f91537b60848552995b7",
+    "url": "https://github.com/llvm/llvm-project/releases/download/llvmorg-23.1.2/LLVM-23.1.2-Linux-X64.tar.xz",
+    "version": "23.1.2"
+  }
+}

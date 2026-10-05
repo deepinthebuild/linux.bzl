@@ -9,6 +9,7 @@ load(
     "linux_disabled_rust_kernel_sdk",
     "linux_rust_kernel_sdk",
 )
+load(":llvm_capabilities.bzl", "linux_compiler_check")
 
 visibility("public")
 
@@ -59,7 +60,8 @@ def _define_config(
         module_make_vars,
         source_repo,
         version,
-        visibility):
+        visibility,
+        llvm_capability_profile):
     compact_vars = dict(arch.compact_vars)
     compact_vars.update({
         "ARCH": arch.arch,
@@ -70,6 +72,8 @@ def _define_config(
     kwargs = {
         "name": name,
         "config": config,
+        "compiler_check": ":_llvm_compiler_check",
+        "llvm_capability_profile": llvm_capability_profile,
         "config_name": name,
         "config_mode": config_mode,
         "env": {
@@ -224,7 +228,9 @@ def linux_image_targets(
         variant_header_family_ids,
         variant_header_configs,
         variant_rust_enabled,
-        config_mode):
+        config_mode,
+        llvm_capability_profile = "llvm-22",
+        compiler_version_text = "clang version 22.1.0, LLD 22.1.0"):
     """Defines private kernel graphs and the base stable exports."""
     if type(base_rust_enabled) != "bool":
         fail("base_rust_enabled must be a bool")
@@ -255,6 +261,14 @@ def linux_image_targets(
             "variant %s generated headers" % variant,
         )
     descriptor = _architecture(arch)
+    linux_compiler_check(
+        name = "_llvm_compiler_check",
+        src = "llvm_compiler_check.c",
+        profile = llvm_capability_profile,
+        compiler_version_text = compiler_version_text,
+        target_compatible_with = [descriptor.platform, "@platforms//os:linux"],
+        visibility = ["//:__subpackages__"],
+    )
     variant_packages = [
         "//variants/%s:__pkg__" % name
         for name in sorted(variant_configs.keys())
@@ -268,6 +282,7 @@ def linux_image_targets(
         name = "_base_config",
         config = base_config,
         config_mode = config_mode,
+        llvm_capability_profile = llvm_capability_profile,
         arch = descriptor,
         minimum_rustc_version = minimum_rustc_version,
         rust_enabled = base_rust_enabled,
@@ -343,6 +358,7 @@ def linux_image_targets(
             name = config_target,
             config = variant_configs[variant],
             config_mode = config_mode,
+            llvm_capability_profile = llvm_capability_profile,
             arch = descriptor,
             minimum_rustc_version = minimum_rustc_version,
             rust_enabled = variant_rust_enabled[variant],

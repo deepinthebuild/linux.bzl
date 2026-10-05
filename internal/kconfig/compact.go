@@ -32,14 +32,18 @@ type CompactMetadata struct {
 }
 
 // CompactTarget binds a generated graph to the platform-selected architecture
-// and to the exact compiler identity used for capability probes.
+// and to the versioned static LLVM capability contract.
 type CompactTarget struct {
-	Profile       string `json:"profile"`
-	LinuxArch     string `json:"linux_arch"`
-	Srcarch       string `json:"srcarch"`
-	UTSMachine    string `json:"uts_machine"`
-	TargetTriple  string `json:"target_triple"`
-	ProbeIdentity string `json:"probe_identity"`
+	Profile               string `json:"profile"`
+	LinuxArch             string `json:"linux_arch"`
+	Srcarch               string `json:"srcarch"`
+	UTSMachine            string `json:"uts_machine"`
+	TargetTriple          string `json:"target_triple"`
+	CapabilityIdentity    string `json:"capability_identity"`
+	LLVMCapabilityProfile string `json:"llvm_capability_profile"`
+	CapabilityModel       string `json:"capability_model"`
+	MinimumClang          int    `json:"minimum_clang"`
+	MinimumLLD            int    `json:"minimum_lld"`
 }
 
 type CompactConfig struct {
@@ -177,11 +181,18 @@ func (t *Tree) CompactMetadataBatchWithOptions(
 		if err := profile.ValidateTargetIdentity(opts.Target.LinuxArch, opts.Target.TargetTriple); err != nil {
 			return nil, err
 		}
-		if opts.Target.Srcarch != profile.Srcarch || opts.Target.UTSMachine != profile.UTSMachine || opts.Target.ProbeIdentity == "" {
+		if opts.Target.Srcarch != profile.Srcarch || opts.Target.UTSMachine != profile.UTSMachine || opts.Target.CapabilityIdentity == "" {
 			return nil, fmt.Errorf("compact metadata has incomplete or inconsistent target identity %#v", opts.Target)
 		}
+		capabilityProfile, err := LLVMCapabilityProfileByName(opts.Target.LLVMCapabilityProfile)
+		if err != nil {
+			return nil, err
+		}
+		if opts.Target.CapabilityIdentity != capabilityProfile.Identity(profile.Name) || opts.Target.CapabilityModel != capabilityProfile.ModelRevision || opts.Target.MinimumClang != capabilityProfile.MinimumClang.Encoded() || opts.Target.MinimumLLD != capabilityProfile.MinimumLLD.Encoded() {
+			return nil, fmt.Errorf("compact metadata has inconsistent LLVM capability contract %#v", opts.Target)
+		}
 		copy := *opts.Target
-		out.Schema = "compact-v8-adaptive-content-graph"
+		out.Schema = CompactGeneratorProtocol
 		out.Target = &copy
 	}
 	configPayloads := map[string]CompactConfigPayload{}
@@ -3249,6 +3260,9 @@ func (m *CompactMetadata) objectBuildFile(opts CompactBuildFileOptions) ([]byte,
 	}
 	sort.Strings(generatedHeaders)
 	r := file.AddRule("linux_compile_environment_index", compileEnvironmentIndexTarget)
+	if m.Target != nil {
+		r.SetAttr("compiler_check", "//:_llvm_compiler_check")
+	}
 	r.SetAttr("config_payloads", configPayloads)
 	r.SetAttr("compile_environments", compileEnvironments)
 	r.SetAttr("expected_abi", expectedABI)

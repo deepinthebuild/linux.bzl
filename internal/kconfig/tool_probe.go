@@ -56,7 +56,7 @@ type LinuxToolProbe struct {
 }
 
 func NewLinuxToolProbe(opts LinuxToolProbeOptions) (*LinuxToolProbe, error) {
-	profile, err := LinuxTargetProfileByName(opts.Profile)
+	profile, err := probeTargetProfile(opts.Profile)
 	if err != nil {
 		return nil, err
 	}
@@ -111,9 +111,7 @@ func NewLinuxToolProbe(opts LinuxToolProbeOptions) (*LinuxToolProbe, error) {
 	if err != nil {
 		return nil, err
 	}
-	if p.clangCode != linuxProbeCCVersion {
-		return nil, fmt.Errorf("probe clang version is %d, want pinned LLVM %d", p.clangCode, linuxProbeCCVersion)
-	}
+
 	lldText, err := p.run(ctx, lldPath, []string{"--version"}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("identify ld.lld probe tool: %w", err)
@@ -122,9 +120,7 @@ func NewLinuxToolProbe(opts LinuxToolProbeOptions) (*LinuxToolProbe, error) {
 	if err != nil {
 		return nil, err
 	}
-	if p.lldCode != linuxProbeLDVersion {
-		return nil, fmt.Errorf("probe ld.lld version is %d, want pinned LLVM %d", p.lldCode, linuxProbeLDVersion)
-	}
+
 	return p, nil
 }
 
@@ -165,7 +161,7 @@ var llvmVersionPattern = regexp.MustCompile(`(?i)(?:clang version|LLD(?: version
 func parseLLVMVersion(output, tool string) (string, int, error) {
 	line := strings.TrimSpace(strings.SplitN(output, "\n", 2)[0])
 	match := llvmVersionPattern.FindStringSubmatch(line)
-	if match == nil {
+	if match == nil || (tool == "clang" && !strings.HasPrefix(strings.ToLower(match[0]), "clang version")) || (tool == "LLD" && !strings.HasPrefix(strings.ToUpper(match[0]), "LLD")) {
 		return "", 0, fmt.Errorf("probe %s returned an unsupported version line %q", tool, line)
 	}
 	major, _ := strconv.Atoi(match[1])

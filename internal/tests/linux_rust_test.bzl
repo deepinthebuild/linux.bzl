@@ -249,6 +249,7 @@ def _rust_config_fixture_impl(ctx):
     return [
         DefaultInfo(files = depset(files)),
         LinuxConfigInfo(
+            compiler_version_text = "clang version 22.1.0, LLD 22.1.0",
             aflags = cflags,
             auto_conf = auto_conf,
             auto_conf_cmd = auto_conf,
@@ -736,7 +737,7 @@ def _repository_protocol_test_impl(ctx):
 
     asserts.equals(
         env,
-        "compact-v8-adaptive-content-graph",
+        "compact-v9-llvm-capabilities",
         repositories_test_helpers.generator_protocol,
     )
     asserts.true(env, "rust_profile_json = " in generated)

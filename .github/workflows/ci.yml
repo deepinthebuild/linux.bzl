@@ -31,6 +31,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Build current graph generator
+        uses: ./.github/actions/local-generator
+
       - name: Configure Bazel
         uses: bazel-contrib/setup-bazel@0.19.0
         with:
@@ -132,6 +135,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Build current graph generator
+        uses: ./.github/actions/local-generator
 
       - name: Configure Bazel
         uses: bazel-contrib/setup-bazel@0.19.0
@@ -361,6 +367,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Build current graph generator
+        uses: ./.github/actions/local-generator
+
       - name: Configure Bazel
         uses: bazel-contrib/setup-bazel@0.19.0
         with:
@@ -426,6 +435,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Build current graph generator
+        uses: ./.github/actions/local-generator
 
       - name: Configure Bazel
         uses: bazel-contrib/setup-bazel@0.19.0
@@ -494,6 +506,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Build current graph generator
+        uses: ./.github/actions/local-generator
 
       - name: Configure Bazel
         uses: bazel-contrib/setup-bazel@0.19.0

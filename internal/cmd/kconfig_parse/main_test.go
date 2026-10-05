@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
@@ -35,6 +36,7 @@ func TestFixedLinuxProbeShellOwnsToolEnvironment(t *testing.T) {
 		kconfig.LinuxProbeDefaultRustcVersion,
 		kconfig.LinuxProbeDefaultRustcLLVMVersion,
 		env,
+		kconfig.DefaultLLVMCapabilityProfile,
 	)
 	if err != nil {
 		t.Fatalf("fixedLinuxProbeShell() failed: %v", err)
@@ -42,7 +44,11 @@ func TestFixedLinuxProbeShellOwnsToolEnvironment(t *testing.T) {
 	if shell == nil {
 		t.Fatal("fixedLinuxProbeShell() returned nil shell")
 	}
-	for name, want := range fixedLinuxProbeEnvironment {
+	capabilities, err := kconfig.StaticLLVMCapabilities(kconfig.DefaultLLVMCapabilityProfile, "arm64")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for name, want := range kconfig.LinuxProbeEnvironment(capabilities) {
 		if got := env[name]; got != want {
 			t.Fatalf("env[%q] = %q, want %q", name, got, want)
 		}
@@ -55,6 +61,7 @@ func TestFixedLinuxProbeShellRejectsToolEnvironmentOverride(t *testing.T) {
 		kconfig.LinuxProbeDefaultRustcVersion,
 		kconfig.LinuxProbeDefaultRustcLLVMVersion,
 		stringMapFlag{"CC": "gcc"},
+		kconfig.DefaultLLVMCapabilityProfile,
 	)
 	if err == nil || !strings.Contains(err.Error(), `CC="clang"`) {
 		t.Fatalf("fixedLinuxProbeShell() error = %v, want fixed CC error", err)
@@ -303,5 +310,45 @@ config HEX_PREFIXED
 	}, "\n")
 	if got != want {
 		t.Fatalf("rustcCfgLines() =\n%s\nwant:\n%s", got, want)
+	}
+}
+
+func TestCompactMetadataBindsCapabilitiesWithoutAdaptiveTarget(t *testing.T) {
+	dir := t.TempDir()
+	files := map[string]string{"Kconfig": "config X86_64\n\tbool\n\tdefault y\n", "Kbuild": "obj-y += unit.o\n", "unit.c": "int value;\n", "include/linux/compiler-version.h": "", "include/linux/compiler_types.h": "", "include/linux/kconfig.h": "", "base.config": "CONFIG_X86_64=y\n"}
+	for name, contents := range files {
+		if err := os.MkdirAll(filepath.Dir(filepath.Join(dir, name)), 0755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(filepath.Join(dir, name), []byte(contents), 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	tree, err := kconfig.ParseFile(context.Background(), filepath.Join(dir, "Kconfig"), kconfig.Options{RootDir: dir})
+	if err != nil {
+		t.Fatal(err)
+	}
+	identities := map[string]bool{}
+	for _, profile := range []string{"llvm-19", "llvm-22"} {
+		capabilities, err := kconfig.StaticLLVMCapabilities(profile, "x86_64")
+		if err != nil {
+			t.Fatal(err)
+		}
+		metadata, err := compactMetadata(tree, filepath.Join(dir, "Kconfig"), filepath.Join(dir, "Kbuild"), []namedPath{{Name: "base", Path: filepath.Join(dir, "base.config")}}, "default", false, map[string]string{"SRCARCH": "x86"}, nil, map[string]string{"base": "//:headers"}, "6.18.39", "test", nil, capabilities)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(metadata.CompileEnvironments) == 0 {
+			t.Fatal("no compile environments")
+		}
+		for _, env := range metadata.CompileEnvironments {
+			if env.ABI != "test/"+capabilities.Identity() {
+				t.Fatalf("ABI %s dropped capability policy", env.ABI)
+			}
+			if identities[env.ID] {
+				t.Fatal("different capability profiles shared a compile environment")
+			}
+			identities[env.ID] = true
+		}
 	}
 }

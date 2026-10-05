@@ -1,0 +1,92 @@
+name: LLVM capability contracts
+
+on:
+  pull_request:
+    paths:
+      - 'internal/kconfig/**'
+      - 'internal/*.bzl'
+      - 'MODULE.bazel'
+      - 'tests/static_generation/**'
+      - 'internal/cmd/llvm_capabilities/**'
+      - 'internal/cmd/kconfig_parse/**'
+      - 'tools/*llvm*'
+      - 'e2e/*.config'
+      - 'examples/configs/**'
+      - '.github/workflows/llvm-capabilities.yml'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reference-probes:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {profile: llvm-19, version: 19.1.0}
+          - {profile: llvm-19, version: 19.1.7}
+          - {profile: llvm-20, version: 20.1.0}
+          - {profile: llvm-20, version: 20.1.8}
+          - {profile: llvm-21, version: 21.1.0}
+          - {profile: llvm-21, version: 21.1.8}
+          - {profile: llvm-22, version: 22.1.0}
+          - {profile: llvm-22, version: 22.1.8}
+          - {profile: llvm-22, version: 23.1.2}
+          - {profile: llvm-23, version: 23.1.0}
+          - {profile: llvm-23, version: 23.1.2}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.13'
+      - name: Reference runtime libraries
+        run: sudo apt-get update && sudo apt-get install -y libxml2 libicu70 libtinfo6
+      - name: Fetch pinned upstream compiler
+        run: python3 tools/fetch_llvm_reference.py '${{ matrix.version }}' "$RUNNER_TEMP/llvm"
+      - name: Fetch supported Linux sources
+        run: |
+          curl -fL https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.12.96.tar.xz -o "$RUNNER_TEMP/linux-6.12.96.tar.xz"
+          curl -fL https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.18.39.tar.xz -o "$RUNNER_TEMP/linux-6.18.39.tar.xz"
+          python3 - "$RUNNER_TEMP" <<'PY'
+          import base64, hashlib, pathlib, sys, tarfile
+          root = pathlib.Path(sys.argv[1])
+          for version, digest in [('6.12.96', 'fS4bXVqzazoBhW5xeC2tKlTmNPsrN8CkKZje87v5V8E='), ('6.18.39', 'p6fj0q6dledBlyI6jU619r56rCG25t4n6WhdABwfjLA=')]:
+              archive = root / ('linux-' + version + '.tar.xz')
+              with archive.open('rb') as stream:
+                  assert hashlib.file_digest(stream, 'sha256').digest() == base64.b64decode(digest)
+              with tarfile.open(archive) as stream:
+                  stream.extractall(root, filter='data')
+          PY
+      - name: Validate every promised capability and source coverage
+        run: |
+          go build -o "$RUNNER_TEMP/llvm_capabilities" ./internal/cmd/llvm_capabilities
+          python3 tools/llvm_capabilities.py --mode validate --profile '${{ matrix.profile }}' \
+            --generator "$RUNNER_TEMP/llvm_capabilities" \
+            --clang "$RUNNER_TEMP/llvm/bin/clang" --lld "$RUNNER_TEMP/llvm/bin/ld.lld" \
+            --source "$RUNNER_TEMP/linux-6.12.96" --source "$RUNNER_TEMP/linux-6.18.39"
+
+  static-generation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+      - uses: bazel-contrib/setup-bazel@0.19.0
+        with:
+          bazelisk-cache: true
+          repository-cache: true
+      - name: Generate a graph without registering a C++ toolchain
+        run: |
+          go build -o "$RUNNER_TEMP/kconfig_parse" ./internal/cmd/kconfig_parse
+          cd tests/static_generation
+          bazel query "set(@graph//graph:metadata.json @graph_6_12//graph:metadata.json @graph_arm64//graph:metadata.json @graph_armv7//graph:metadata.json)" --repo_env=LINUX_BZL_KCONFIG_PARSE="$RUNNER_TEMP/kconfig_parse"

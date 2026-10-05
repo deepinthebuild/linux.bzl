@@ -1,6 +1,5 @@
 """Module extension and facade repositories for configured Linux images."""
 
-load("@llvm//toolchain:selects.bzl", "platform_module_map")
 load(":architecture_profiles.bzl", "linux_architecture_profiles")
 load(":linux_image_repository.bzl", _linux_image_repository = "linux_image")
 load(":repository_utils.bzl", _repository_prefix = "repository_prefix")
@@ -8,30 +7,6 @@ load(":repository_utils.bzl", _repository_prefix = "repository_prefix")
 visibility("//...")
 
 _IMAGE_NAME_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789_-"
-
-def _llvm_probe_tools(module_ctx):
-    os_name = module_ctx.os.name.lower()
-    if os_name in ["mac os x", "macos"]:
-        os_name = "macos"
-    elif os_name.startswith("windows"):
-        os_name = "windows"
-    elif os_name != "linux":
-        fail("unsupported LLVM probe host operating system %r" % module_ctx.os.name)
-
-    arch = module_ctx.os.arch.lower()
-    if arch in ["amd64", "x86_64", "x64"]:
-        arch = "x86_64"
-    elif arch in ["aarch64", "arm64"]:
-        arch = "aarch64"
-    else:
-        fail("unsupported LLVM probe host architecture %r" % module_ctx.os.arch)
-
-    anchor = platform_module_map(os_name, arch)
-    suffix = ".exe" if os_name == "windows" else ""
-    return struct(
-        cc = anchor.relative(":bin/clang%s" % suffix),
-        ld = anchor.relative(":bin/ld.lld%s" % suffix),
-    )
 
 def _validate_name(value, what):
     if not value:
@@ -188,7 +163,6 @@ def _root_tags(module_ctx):
 
 def _linux_images_impl(module_ctx):
     images, overlays = _root_tags(module_ctx)
-    probe_tools = _llvm_probe_tools(module_ctx)
     overlays_by_image = {}
     for (image, name), tag in overlays.items():
         if image not in images:
@@ -208,8 +182,7 @@ def _linux_images_impl(module_ctx):
                 config_mode = image.config_mode,
                 overlays = image_overlays,
                 platform = image.platform,
-                probe_cc = probe_tools.cc,
-                probe_ld = probe_tools.ld,
+                llvm_capability_profile = image.llvm_capability_profile,
                 source = image.source,
                 target_profile = profile.name,
                 linux_arch = profile.linux_arch,
@@ -223,6 +196,7 @@ def _linux_images_impl(module_ctx):
         )
 
 _image = tag_class(attrs = {
+    "llvm_capability_profile": attr.string(default = "llvm-22", values = ["llvm-19", "llvm-20", "llvm-21", "llvm-22", "llvm-23"]),
     "config": attr.label(mandatory = True),
     "config_mode": attr.string(default = "default", values = ["allnoconfig", "default"]),
     "name": attr.string(mandatory = True),
@@ -237,9 +211,7 @@ _overlay = tag_class(attrs = {
 })
 
 linux_images = module_extension(
-    arch_dependent = True,
     implementation = _linux_images_impl,
-    os_dependent = True,
     tag_classes = {
         "image": _image,
         "overlay": _overlay,

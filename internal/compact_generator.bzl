@@ -60,6 +60,7 @@ def _linux_compact_outputs_impl(ctx):
         fail("source_root_label must be non-empty")
 
     args = ctx.actions.args()
+    args.add("-llvm_capability_profile", ctx.attr.llvm_capability_profile)
     args.add("-compact_base_config", ctx.attr.compact_base_config)
     args.add("-compile_environment_abi", ctx.attr.compile_environment_abi)
     for config_name, label in sorted(ctx.attr.generated_headers_by_config.items()):
@@ -137,6 +138,7 @@ def _linux_compact_outputs_impl(ctx):
 _linux_compact_outputs = rule(
     implementation = _linux_compact_outputs_impl,
     attrs = {
+        "llvm_capability_profile": attr.string(default = "llvm-22"),
         "allow_shell": attr.bool(
             doc = "Allow $(shell,...) expansion while parsing Kconfig files.",
         ),
@@ -440,6 +442,7 @@ def linux_compact_buildfiles(
         source_label_package,
         source_root_label,
         config_mode = "default",
+        llvm_capability_profile = "llvm-22",
         srcs = [],
         object_label_package = None,
         source_asn1_compiler = "",
@@ -471,6 +474,7 @@ def linux_compact_buildfiles(
         allow_shell = allow_shell,
         buildfile_exports = buildfile_exports,
         config_mode = config_mode,
+        llvm_capability_profile = llvm_capability_profile,
         compact_base_config = compact_base_config,
         compile_environment_abi = compile_environment_abi,
         configs = configs,

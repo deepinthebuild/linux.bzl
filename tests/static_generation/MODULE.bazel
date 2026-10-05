@@ -1,0 +1,58 @@
+module(name = "linux_bzl_static_generation_test")
+
+bazel_dep(name = "linux.bzl", version = "0.0.0")
+bazel_dep(name = "platforms", version = "1.0.0")
+
+local_path_override(
+    module_name = "linux.bzl",
+    path = "../..",
+)
+
+linux_source_repository = use_repo_rule("@linux.bzl//:linux.bzl", "linux_source_repository")
+
+linux_source_repository(
+    name = "linux_source",
+    version = "6.18.39",
+)
+
+images = use_extension("@linux.bzl//:extensions.bzl", "linux_images")
+images.image(
+    name = "kernel",
+    config = "//:kernel.config",
+    llvm_capability_profile = "llvm-22",
+    platform = "//:linux_x86_64",
+    source = "@linux_source//:Kconfig",
+)
+
+# Deliberately inspect repository generation without registering any C++ toolchain.
+use_repo(images, "kernel", graph = "kernel__linux_graph__x86_64")
+
+linux_source_repository(
+    name = "linux_source_6_12",
+    version = "6.12.96",
+)
+
+images.image(
+    name = "kernel_6_12",
+    config = "//:kernel.config",
+    platform = "//:linux_x86_64",
+    source = "@linux_source_6_12//:Kconfig",
+)
+images.image(
+    name = "kernel_arm64",
+    config = "//:kernel.config",
+    platform = "//:linux_aarch64",
+    source = "@linux_source//:Kconfig",
+)
+images.image(
+    name = "kernel_armv7",
+    config = "//:armv7.config",
+    platform = "//:linux_armv7",
+    source = "@linux_source//:Kconfig",
+)
+use_repo(
+    images,
+    graph_6_12 = "kernel_6_12__linux_graph__x86_64",
+    graph_arm64 = "kernel_arm64__linux_graph__aarch64",
+    graph_armv7 = "kernel_armv7__linux_graph__armv7",
+)

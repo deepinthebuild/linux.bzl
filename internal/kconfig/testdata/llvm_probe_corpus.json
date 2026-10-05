@@ -1,0 +1,420 @@
+[
+  {
+    "architecture": "riscv64",
+    "kind": "source",
+    "language": "assembler-with-cpp",
+    "source": ".option arch, +m\n",
+    "context": [
+      "-Wa,--fatal-warnings"
+    ]
+  },
+  {
+    "architecture": "riscv64",
+    "kind": "source",
+    "language": "assembler-with-cpp",
+    "source": ".option arch, +v, +zvkb\n",
+    "context": [
+      "-Wa,--fatal-warnings"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "ld_option",
+    "candidate": [
+      "--eh-frame-hdr"
+    ],
+    "context": [
+      "-m",
+      "elf_x86_64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wa,-mrelax-relocations=no"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wa,-mtune=generic32"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-fortify-source"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-missing-prototypes"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-psabi"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-stringop-overread"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-stringop-truncation"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-switch-unreachable"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-tautological-constant-out-of-range-compare"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-uninitialized"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-unsequenced"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-unused-but-set-variable"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wno-unused-const-variable"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wold-style-declaration"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-Wvla-larger-than=1"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-falign-jumps=1"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-falign-jumps=1"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mno-sse",
+      "-mno-mmx",
+      "-mno-sse2",
+      "-mno-3dnow",
+      "-mno-avx",
+      "-mno-sse4a",
+      "-m32",
+      "-msoft-float",
+      "-mregparm=3",
+      "-freg-struct-return",
+      "-fno-pic",
+      "-ffreestanding",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-falign-loops=1"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-falign-loops=1"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mno-sse",
+      "-mno-mmx",
+      "-mno-sse2",
+      "-mno-3dnow",
+      "-mno-avx",
+      "-mno-sse4a",
+      "-m32",
+      "-msoft-float",
+      "-mregparm=3",
+      "-freg-struct-return",
+      "-fno-pic",
+      "-ffreestanding",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-femit-struct-debug-detailed=any"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-fmacro-prefix-map=/__linux_bzl_source__/="
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-fno-addrsig"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-fno-schedule-insns"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-fsched-pressure"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-maccumulate-outgoing-args"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mgeneral-regs-only"
+    ],
+    "context": [
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mno-fp-ret-in-387"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mno-fp-ret-in-387"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mno-sse",
+      "-mno-mmx",
+      "-mno-sse2",
+      "-mno-3dnow",
+      "-mno-avx",
+      "-mno-sse4a",
+      "-m32",
+      "-msoft-float",
+      "-mregparm=3",
+      "-freg-struct-return",
+      "-fno-pic",
+      "-ffreestanding",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mskip-rax-setup"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mskip-rax-setup"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mno-sse",
+      "-mno-mmx",
+      "-mno-sse2",
+      "-mno-3dnow",
+      "-mno-avx",
+      "-mno-sse4a",
+      "-m32",
+      "-msoft-float",
+      "-mregparm=3",
+      "-freg-struct-return",
+      "-fno-pic",
+      "-ffreestanding",
+      "-m64"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mtune=generic"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mstack-alignment=4"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mtune=i686"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mstack-alignment=4"
+    ]
+  },
+  {
+    "architecture": "x86_64",
+    "kind": "cc_option",
+    "candidate": [
+      "-mtune=pentium4"
+    ],
+    "context": [
+      "-mstack-alignment=4",
+      "-mstack-alignment=4"
+    ]
+  }
+]

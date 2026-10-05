@@ -69,27 +69,6 @@ _ARCHITECTURES = {
     ),
 }
 
-_TOOLCHAIN_PLATFORM_PROFILES = {
-    Label("@llvm//platforms:linux_arm64"): "aarch64",
-    Label("@llvm//platforms:linux_armv7"): "armv7",
-    Label("@llvm//platforms:linux_x86_64"): "x86_64",
-}
-
-def linux_target_profile_for_platform(platform):
-    """Returns repository metadata for a canonical LLVM target platform."""
-    name = _TOOLCHAIN_PLATFORM_PROFILES.get(platform)
-    if name == None:
-        fail(
-            "unsupported Linux target platform %s; expected one of %s" %
-            (platform, sorted([str(label) for label in _TOOLCHAIN_PLATFORM_PROFILES])),
-        )
-    descriptor = _ARCHITECTURES[name]
-    return struct(
-        linux_arch = descriptor.arch,
-        name = name,
-        target_triple = descriptor.target_triple,
-    )
-
 _ARCH_CONFIGS = {
     "CONFIG_ARM": "armv7",
     "CONFIG_ARM64": "aarch64",
@@ -106,8 +85,7 @@ _REQUIRED_ARCH_CONFIGS = {
     "x86_64": ["CONFIG_X86", "CONFIG_X86_64"],
 }
 
-_REPOSITORY_GENERATOR_PROTOCOL = "compact-v8-adaptive-content-graph"
-_CLANG_BASELINE_VERSION = "22.1.8"
+_REPOSITORY_GENERATOR_PROTOCOL = "compact-v9-llvm-capabilities"
 _IMAGE_COMPRESSION_CONFIGS = {
     "CONFIG_KERNEL_GZIP": True,
     "CONFIG_KERNEL_LZ4": True,
@@ -128,7 +106,11 @@ _CONTENT_GRAPH_METADATA_FIELDS = {
 
 _CONTENT_GRAPH_TARGET_FIELDS = {
     "linux_arch": "string",
-    "probe_identity": "string",
+    "capability_identity": "string",
+    "llvm_capability_profile": "string",
+    "capability_model": "string",
+    "minimum_clang": "int",
+    "minimum_lld": "int",
     "profile": "string",
     "srcarch": "string",
     "target_triple": "string",
@@ -509,6 +491,8 @@ def _linux_image_impl(rctx):
             variant_header_configs = variant_header_configs,
             variant_rust_enabled = variant_rust_enabled,
             rules_repo = rules_repo,
+            llvm_capability_profile = rctx.attr.llvm_capability_profile,
+            compiler_version_text = _llvm_capability_profile(rctx).compiler_version_text,
         ),
         executable = False,
     )
@@ -529,6 +513,8 @@ def _linux_image_impl(rctx):
             "architecture": arch,
             "linux_arch": descriptor.arch,
             "target_triple": descriptor.target_triple,
+            "llvm_capability_profile": rctx.attr.llvm_capability_profile,
+            "capability_identity": _llvm_capability_profile(rctx).identity,
             "graph_stats": graph_stats,
             "protocol": _REPOSITORY_GENERATOR_PROTOCOL,
             "rust_enabled": base_rust_enabled,
@@ -576,16 +562,12 @@ linux_image = repository_rule(
             default = "x86_64-linux-gnu",
             doc = "Canonical LLVM target triple bound to target_profile. Defaults to x86_64-linux-gnu for legacy direct callers.",
         ),
-        "probe_cc": attr.label(
-            allow_single_file = True,
-            mandatory = True,
-            doc = "Clang from the declared LLVM module used for repository-time probes.",
+        "llvm_capability_profile": attr.string(
+            default = "llvm-22",
+            values = ["llvm-19", "llvm-20", "llvm-21", "llvm-22", "llvm-23"],
+            doc = "Conservative LLVM compiler/linker capability contract, independent of target architecture.",
         ),
-        "probe_ld": attr.label(
-            allow_single_file = True,
-            mandatory = True,
-            doc = "LLD from the declared LLVM module used for repository-time probes.",
-        ),
+        "_llvm_profiles": attr.label(default = Label("//internal/kconfig:llvm_profiles.json")),
         "source": attr.label(
             allow_single_file = True,
             mandatory = True,
@@ -848,7 +830,39 @@ def _host_platform(rctx):
         fail("no linux.bzl graph generator for host architecture %r" % rctx.os.arch)
     return "%s_%s" % (os, arch)
 
+def _validate_generator_protocol(rctx, tool):
+    result = rctx.execute([str(tool), "-generator_protocol"], quiet = True)
+    if result.return_code != 0 or result.stdout.strip() != _REPOSITORY_GENERATOR_PROTOCOL:
+        fail("Generator must support %s. Build the local generator and set --repo_env=LINUX_BZL_KCONFIG_PARSE=/absolute/path/to/kconfig_parse until matching release binaries are published." % _REPOSITORY_GENERATOR_PROTOCOL)
+
+def _llvm_version_code(version):
+    major, minor, patch = [int(value) for value in version.split(".")]
+    return major * 10000 + minor * 100 + patch
+
+def _llvm_capability_profile(rctx):
+    profiles = json.decode(rctx.read(rctx.attr._llvm_profiles))
+    name = rctx.attr.llvm_capability_profile
+    if name not in profiles:
+        fail("unknown LLVM capability profile %r" % name)
+    profile = profiles[name]
+    return struct(
+        name = name,
+        model_revision = profile["model_revision"],
+        minimum_clang = _llvm_version_code(profile["minimum_clang"]),
+        minimum_lld = _llvm_version_code(profile["minimum_lld"]),
+        compiler_version_text = "clang version %s, LLD %s" % (profile["minimum_clang"], profile["minimum_lld"]),
+        identity = "%s/%s/%s" % (name, profile["model_revision"], rctx.attr.target_profile),
+    )
+
 def _download_generator(rctx):
+    local_generator = rctx.getenv("LINUX_BZL_KCONFIG_PARSE")
+    if local_generator:
+        tool = rctx.path(local_generator)
+        if not tool.exists:
+            fail("LINUX_BZL_KCONFIG_PARSE does not exist: %s" % local_generator)
+        rctx.watch(tool)
+        _validate_generator_protocol(rctx, tool)
+        return tool
     platform = _host_platform(rctx)
     release = KCONFIG_TOOL_RELEASES.get(platform)
     if release == None or not release.integrity:
@@ -865,6 +879,7 @@ def _download_generator(rctx):
     tool = rctx.path(".linux_bzl_tools").get_child(kconfig_tool_filename(platform, "kconfig_parse"))
     if not tool.exists:
         fail("linux.bzl generator archive for %s does not contain kconfig_parse" % platform)
+    _validate_generator_protocol(rctx, tool)
     return tool
 
 def _generate_rust_profile(rctx, tool, source_root, descriptor):
@@ -922,12 +937,8 @@ def _generate_content_graph(
     graph_dir = "graph"
     _initialize_generator_outputs(rctx, graph_dir)
     descriptor = _ARCHITECTURES[arch]
-    compile_environment_abi = "linux.bzl/compact-v8/clang-%s/%s/%s/%s" % (
-        _CLANG_BASELINE_VERSION,
-        arch,
-        descriptor.arch,
-        descriptor.srcarch,
-    )
+    capability_profile = _llvm_capability_profile(rctx)
+    compile_environment_abi = "linux.bzl/compact-v9/%s/%s" % (descriptor.arch, descriptor.srcarch)
     source_package = str(source).rsplit(":", 1)[0]
     args = [
         str(tool),
@@ -1001,6 +1012,11 @@ def _generate_content_graph(
         expected_compile_environment_abi = compile_environment_abi,
         expected_srcarch = descriptor.srcarch,
         expected_target = struct(
+            capability_identity = capability_profile.identity,
+            llvm_capability_profile = capability_profile.name,
+            capability_model = capability_profile.model_revision,
+            minimum_clang = capability_profile.minimum_clang,
+            minimum_lld = capability_profile.minimum_lld,
             linux_arch = descriptor.arch,
             profile = arch,
             srcarch = descriptor.srcarch,
@@ -1275,10 +1291,10 @@ def _add_generator_variables(args, rctx, profile, descriptor, source_root, minim
         descriptor.arch,
         "-target_triple",
         descriptor.target_triple,
-        "-probe_cc",
-        str(rctx.path(rctx.attr.probe_cc)),
-        "-probe_ld",
-        str(rctx.path(rctx.attr.probe_ld)),
+        "-llvm_capability_profile",
+        rctx.attr.llvm_capability_profile,
+        "-compiler_check_out",
+        str(rctx.path("llvm_compiler_check.c")),
     ])
 
 def _metadata_positive_decimal(value, context):
@@ -1666,14 +1682,12 @@ def _validate_generated_metadata(
     if structure_error:
         fail("Linux graph generator wrote invalid metadata: %s" % structure_error)
     target = metadata["target"]
-    for key in ["linux_arch", "profile", "srcarch", "target_triple", "uts_machine"]:
+    for key in ["linux_arch", "profile", "srcarch", "target_triple", "uts_machine", "capability_identity", "llvm_capability_profile", "capability_model", "minimum_clang", "minimum_lld"]:
         if target[key] != getattr(expected_target, key):
             fail(
                 "Linux graph generator target %s=%r, expected %r" %
                 (key, target[key], getattr(expected_target, key)),
             )
-    if not target["probe_identity"].startswith("sha256-"):
-        fail("Linux graph generator emitted invalid probe identity %r" % target["probe_identity"])
     generated_configs = metadata.get("configs", [])
     names = sorted([config.get("name", "") for config in generated_configs])
     expected_names = sorted(config_names)
@@ -1817,7 +1831,7 @@ def _validate_generated_metadata(
             fail("Linux content graph compile environment %s is invalid" % environment_id)
         _validate_compile_environment_abi(
             abi,
-            expected_compile_environment_abi + "/probe-" + metadata["target"]["probe_identity"],
+            expected_compile_environment_abi + "/" + metadata["target"]["capability_identity"],
             environment_id,
         )
         family_names = {}
@@ -2007,7 +2021,9 @@ def _kernel_root_build(
         variant_header_family_ids,
         variant_header_configs,
         variant_rust_enabled,
-        rules_repo):
+        rules_repo,
+        llvm_capability_profile = "llvm-22",
+        compiler_version_text = "clang version 22.1.0, LLD 22.1.0"):
     return """load("{rules_repo}//internal:kernel_repository_targets.bzl", "linux_image_targets")
 
 package(default_visibility = ["//visibility:private"])
@@ -2017,6 +2033,8 @@ linux_image_targets(
     arch = {arch},
     version = {version},
     source_repo = {source_repo},
+    llvm_capability_profile = {llvm_capability_profile},
+    compiler_version_text = {compiler_version_text},
     minimum_rustc_version = {minimum_rustc_version},
     rust_profile_json = {rust_profile_json},
     platform = {platform},
@@ -2039,6 +2057,8 @@ linux_image_targets(
         arch = repr(arch),
         version = repr(version),
         source_repo = repr(source_repo),
+        llvm_capability_profile = repr(llvm_capability_profile),
+        compiler_version_text = repr(compiler_version_text),
         minimum_rustc_version = repr(minimum_rustc_version),
         rust_profile_json = repr(rust_profile_json),
         platform = repr(platform),
@@ -2060,6 +2080,7 @@ linux_image_targets(
     )
 
 repositories_test_helpers = struct(
+    llvm_version_code = _llvm_version_code,
     action_group_validation = _action_group_validation,
     validate_compile_environment_abi = _validate_compile_environment_abi,
     content_graph_metadata_structure_error = _content_graph_metadata_structure_error,
@@ -2078,7 +2099,6 @@ repositories_test_helpers = struct(
         _ARCHITECTURES[name].uts_machine,
         _ARCHITECTURES[name].target_triple,
     ),
-    target_profile_for_platform = linux_target_profile_for_platform,
     without_rust_toolchain_config = _without_rust_toolchain_config,
 )
 

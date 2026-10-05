@@ -9,6 +9,7 @@ load(":clang_resource_headers.bzl", "clang_resource_headers")
 load(":host_cc_toolchain.bzl", "host_cc_toolchain_attr")
 load(":kconfig.bzl", "KconfigInfo")
 load(":linux_module_actions.bzl", "linux_module_actions")
+load(":llvm_capabilities.bzl", "LinuxCompilerCapabilityInfo")
 load(
     ":path_mapping.bzl",
     "add_directory_arg",
@@ -42,6 +43,7 @@ LinuxConfigInfo = provider(
         "autoconf_h": "include/generated/autoconf.h output.",
         "config": ".config output.",
         "config_flags": "Resolved CONFIG_* values used to materialize the files.",
+        "compiler_version_text": "Compiler identity from the selected capability profile.",
         "cflags": "Compiler response file containing config-derived Kbuild C flags.",
         "files": "Depset of all generated config files.",
         "include_dir": "Generated include directory path for compiler -I flags.",
@@ -3205,7 +3207,7 @@ def _linux_x86_version_header_family(ctx, config, name, path, output_flag, mnemo
     inputs = []
     if name == "compile":
         args.add("-machine", "x86_64")
-        args.add("-compiler", _linux_compiler_version_string())
+        args.add("-compiler", _linux_compiler_version_string(config))
     elif name == "version":
         args.add("-kernel_version", config.kernel_version)
     elif name == "utsrelease":
@@ -3677,7 +3679,7 @@ def _linux_arm64_generated_headers_impl(ctx):
     version_args.add("-utsrelease_out", utsrelease_h)
     version_args.add("-utsversion_out", utsversion_h)
     version_args.add("-machine", "aarch64")
-    version_args.add("-compiler", _linux_compiler_version_string())
+    version_args.add("-compiler", _linux_compiler_version_string(config))
     path_mapped_run(
         ctx.actions,
         executable = ctx.executable._versionheaders,
@@ -5002,7 +5004,7 @@ def _linux_generic_generated_headers_impl(ctx):
     version_args.add("-utsrelease_out", utsrelease_h)
     version_args.add("-utsversion_out", utsversion_h)
     version_args.add("-machine", ctx.attr.uts_machine)
-    version_args.add("-compiler", _linux_compiler_version_string())
+    version_args.add("-compiler", _linux_compiler_version_string(config))
     path_mapped_run(
         ctx.actions,
         executable = ctx.executable._versionheaders,
@@ -5226,6 +5228,16 @@ linux_generic_generated_headers = rule(
     doc = "Generates the monolithic preparatory header tree for arm, RISC-V, or PowerPC.",
 )
 
+def _compiler_check_files(ctx):
+    check = getattr(ctx.attr, "compiler_check", None)
+    return check[LinuxCompilerCapabilityInfo].files if check else depset()
+
+def _compiler_version_text(ctx, flags):
+    check = getattr(ctx.attr, "compiler_check", None)
+    if check:
+        return check[LinuxCompilerCapabilityInfo].compiler_version_text
+    return _unquote(flags.get("CONFIG_CC_VERSION_TEXT", '"clang version 22.1.0, LLD 22.1.0"'))
+
 def _declare_linux_config(ctx, config_dir, flags, kernel_version):
     config = ctx.actions.declare_file(config_dir + "/.config")
     auto_conf = ctx.actions.declare_file(config_dir + "/include/config/auto.conf")
@@ -5238,7 +5250,7 @@ def _declare_linux_config(ctx, config_dir, flags, kernel_version):
     cflags = ctx.actions.declare_file(config_dir + "/include/generated/bazel_kbuild_cflags.rsp")
 
     outputs = [config, auto_conf, auto_conf_cmd, autoconf_h, integer_wrap_h, rustc_cfg, kernel_release, aflags, cflags]
-    files = depset(outputs)
+    files = depset(outputs, transitive = [_compiler_check_files(ctx)])
     include_dir = autoconf_h.dirname
     if include_dir.endswith("/generated"):
         include_dir = include_dir[:-len("/generated")]
@@ -5250,6 +5262,7 @@ def _declare_linux_config(ctx, config_dir, flags, kernel_version):
             autoconf_h = autoconf_h,
             config = config,
             config_flags = flags,
+            compiler_version_text = _compiler_version_text(ctx, flags),
             cflags = cflags,
             files = files,
             include_dir = include_dir,
@@ -5340,6 +5353,7 @@ def _linux_config_impl(ctx):
 linux_config = rule(
     implementation = _linux_config_impl,
     attrs = {
+        "compiler_check": attr.label(providers = [LinuxCompilerCapabilityInfo]),
         "arch": attr.string(
             doc = "Linux ARCH. When set, derive global compiler and assembler flags from this config.",
         ),
@@ -5579,7 +5593,7 @@ def _linux_compile_environment_index_impl(ctx):
         path_mapped_run(
             ctx.actions,
             executable = ctx.executable._kernelflags,
-            inputs = [manifest],
+            inputs = depset([manifest], transitive = [_compiler_check_files(ctx)]),
             outputs = config_payload_outputs_by_bucket[bucket],
             arguments = [payload_args],
             mnemonic = "LinuxConfigPayloads",
@@ -5642,6 +5656,7 @@ def _linux_compile_environment_index_impl(ctx):
 linux_compile_environment_index = rule(
     implementation = _linux_compile_environment_index_impl,
     attrs = {
+        "compiler_check": attr.label(providers = [LinuxCompilerCapabilityInfo]),
         "arch": attr.string(
             doc = "Linux ARCH used to derive compiler and assembler flags for materialized payloads.",
         ),
@@ -5684,8 +5699,8 @@ def _add_linux_probe_args(args, allow_shell, vars, env):
     args.add("-allow_shell")
     args.add("-linux_probe_arch", architecture)
 
-def _linux_compiler_version_string():
-    return "clang version 22.1.8None, LLD 22.1.8"
+def _linux_compiler_version_string(config):
+    return config.compiler_version_text
 
 def _rustc_tool_inputs(toolchain):
     transitive = []
@@ -5765,6 +5780,9 @@ def _resolve_linux_config(ctx, rust_toolchain_probe):
     if rust_toolchain_probe:
         args.add("-rust_toolchain_probe", rust_toolchain_probe)
         args.add("-validate_config_equivalence")
+    args.add("-llvm_capability_profile", ctx.attr.llvm_capability_profile)
+    if ctx.attr.compiler_check and ctx.attr.compiler_check[LinuxCompilerCapabilityInfo].profile != ctx.attr.llvm_capability_profile:
+        fail("resolved config and compiler check must use the same LLVM capability profile")
     _add_linux_probe_args(args, ctx.attr.allow_shell, vars, env)
     for key, value in sorted(vars.items()):
         args.add("-var", "%s=%s" % (key, value))
@@ -5779,7 +5797,7 @@ def _resolve_linux_config(ctx, rust_toolchain_probe):
     path_mapped_run(
         ctx.actions,
         executable = ctx.executable._kconfig_parse,
-        inputs = depset(inputs),
+        inputs = depset(inputs, transitive = [_compiler_check_files(ctx)]),
         outputs = [config, auto_conf, auto_conf_cmd, autoconf_h, rustc_cfg, kernel_release],
         arguments = [args],
         mnemonic = "LinuxResolvedConfig",
@@ -5806,7 +5824,7 @@ def _resolve_linux_config(ctx, rust_toolchain_probe):
     include_dir = autoconf_h.dirname
     if include_dir.endswith("/generated"):
         include_dir = include_dir[:-len("/generated")]
-    files = depset([config, auto_conf, auto_conf_cmd, autoconf_h, integer_wrap_h, rustc_cfg, kernel_release, aflags, cflags])
+    files = depset([config, auto_conf, auto_conf_cmd, autoconf_h, integer_wrap_h, rustc_cfg, kernel_release, aflags, cflags], transitive = [_compiler_check_files(ctx)])
     return [
         DefaultInfo(files = files),
         LinuxConfigInfo(
@@ -5816,6 +5834,7 @@ def _resolve_linux_config(ctx, rust_toolchain_probe):
             autoconf_h = autoconf_h,
             config = config,
             config_flags = dict(ctx.attr.config[KconfigInfo].config_flags),
+            compiler_version_text = _compiler_version_text(ctx, ctx.attr.config[KconfigInfo].config_flags),
             cflags = cflags,
             files = files,
             include_dir = include_dir,
@@ -5835,6 +5854,8 @@ def _linux_rust_resolved_config_impl(ctx):
     return _resolve_linux_config(ctx, _materialize_rust_toolchain_probe(ctx))
 
 _LINUX_RESOLVED_CONFIG_ATTRS = {
+    "compiler_check": attr.label(providers = [LinuxCompilerCapabilityInfo]),
+    "llvm_capability_profile": attr.string(default = "llvm-22"),
     "allow_shell": attr.bool(
         default = True,
         doc = "Allow deterministic $(shell,...) expansion while resolving Kconfig defaults.",

@@ -1,0 +1,16 @@
+name: Build current Linux graph generator
+description: Test the checked-out generator protocol without waiting for a prebuilt release.
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-go@v6
+      with:
+        go-version-file: go.mod
+    - shell: bash
+      run: |
+        set -euo pipefail
+        generator="${RUNNER_TEMP}/linux-bzl-generator/kconfig_parse"
+        if [[ "${RUNNER_OS}" == Windows ]]; then generator="${generator}.exe"; fi
+        mkdir -p "$(dirname "${generator}")"
+        go build -o "${generator}" ./internal/cmd/kconfig_parse
+        echo "LINUX_BZL_KCONFIG_PARSE=${generator}" >> "${GITHUB_ENV}"

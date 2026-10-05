@@ -249,7 +249,7 @@ func (p *preprocessor) runShell(command string) (string, error) {
 		err error
 	)
 	if p.opts.Shell != nil {
-		outString, err := p.opts.Shell(p.ctx, command)
+		outString, err := p.opts.Shell(context.WithValue(p.ctx, capabilityPositionKey{}, p.current), command)
 		return normalizeShellOutput([]byte(outString)), err
 	}
 	cmd := exec.CommandContext(p.ctx, "sh", "-c", command)

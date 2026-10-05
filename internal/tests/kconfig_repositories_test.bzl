@@ -41,6 +41,8 @@ generator_variable_args_test = unittest.make(_generator_variable_args_test_impl)
 
 def _target_profiles_test_impl(ctx):
     env = unittest.begin(ctx)
+    asserts.equals(env, 220100, repositories_test_helpers.llvm_version_code("22.1.0"))
+    asserts.equals(env, 220104, repositories_test_helpers.llvm_version_code("22.1.4"))
     want = {
         "aarch64": ("arm64", "arm64", "aarch64", "aarch64-linux-gnu"),
         "armv7": ("arm", "arm", "armv7l", "arm-linux-gnueabi"),
@@ -48,17 +50,6 @@ def _target_profiles_test_impl(ctx):
     }
     for profile, identity in want.items():
         asserts.equals(env, identity, repositories_test_helpers.target_profile_identity(profile))
-    for platform, profile in {
-        "linux_arm64": "aarch64",
-        "linux_armv7": "armv7",
-        "linux_x86_64": "x86_64",
-    }.items():
-        selected = repositories_test_helpers.target_profile_for_platform(
-            Label("@llvm//platforms:%s" % platform),
-        )
-        asserts.equals(env, profile, selected.name)
-        asserts.equals(env, want[profile][0], selected.linux_arch)
-        asserts.equals(env, want[profile][3], selected.target_triple)
     return unittest.end(env)
 
 target_profiles_test = unittest.make(_target_profiles_test_impl)
@@ -143,10 +134,14 @@ def _metadata_without_key(metadata, collection, key):
 def _metadata_key_validation_test_impl(ctx):
     env = unittest.begin(ctx)
     metadata = {
-        "schema": "compact-v8-adaptive-content-graph",
+        "schema": "compact-v9-llvm-capabilities",
         "target": {
             "linux_arch": "x86",
-            "probe_identity": "sha256-test",
+            "capability_identity": "llvm-22/capabilities-v1/x86_64",
+            "llvm_capability_profile": "llvm-22",
+            "capability_model": "capabilities-v1",
+            "minimum_clang": 220100,
+            "minimum_lld": 220100,
             "profile": "x86_64",
             "srcarch": "x86",
             "target_triple": "x86_64-linux-gnu",
@@ -232,10 +227,14 @@ def _metadata_key_validation_test_impl(ctx):
             "metadata with retired field %r should be rejected, got %r" % (key, error),
         )
     sparse = {
-        "schema": "compact-v8-adaptive-content-graph",
+        "schema": "compact-v9-llvm-capabilities",
         "target": {
             "linux_arch": "x86",
-            "probe_identity": "sha256-test",
+            "capability_identity": "llvm-22/capabilities-v1/x86_64",
+            "llvm_capability_profile": "llvm-22",
+            "capability_model": "capabilities-v1",
+            "minimum_clang": 220100,
+            "minimum_lld": 220100,
             "profile": "x86_64",
             "srcarch": "x86",
             "target_triple": "x86_64-linux-gnu",
@@ -660,7 +659,7 @@ def compile_environment_abi_test(name):
     _compile_environment_abi_subject(
         name = subject,
         actual = "unexpected-abi",
-        expected = "linux.bzl/compact-v8/clang-22.1.8/x86_64/x86/x86/probe-sha256-test",
+        expected = "linux.bzl/compact-v9/x86/x86/llvm-22/capabilities-v1/x86_64",
         tags = ["manual"],
     )
     _compile_environment_abi_failure_test(

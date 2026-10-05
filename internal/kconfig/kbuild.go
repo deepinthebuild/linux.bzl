@@ -2,6 +2,7 @@ package kconfig
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"maps"
@@ -148,6 +149,8 @@ type KbuildCondition struct {
 }
 
 type KbuildOptions struct {
+	// Capabilities answers both option and source probes without assuming a distribution.
+	Capabilities    CompilerCapabilities
 	RootDir         string
 	RootMakefiles   []string
 	SourceRoots     map[string]string
@@ -218,6 +221,7 @@ func parseKbuildFileTree(path string, opts KbuildOptions, variableOverrides map[
 	}
 	parser := newKbuildParserWithOverrides(opts.Variables, variableOverrides, "")
 	parser.configVariablesComplete = opts.ConfigVariablesComplete
+	parser.capabilities = opts.Capabilities
 	parser.probeOption = opts.ProbeOption
 	parser.probeSource = opts.ProbeSource
 	parser.filterKbuildFlags = opts.filterKbuildFlags
@@ -266,6 +270,7 @@ func parseKbuild(r io.Reader, filename string, vars map[string]string, baseDir s
 func parseKbuildWithOptions(r io.Reader, filename string, opts KbuildOptions, baseDir string) (*KbuildFile, error) {
 	parser := newKbuildParser(opts.Variables, baseDir)
 	parser.configVariablesComplete = opts.ConfigVariablesComplete
+	parser.capabilities = opts.Capabilities
 	parser.probeOption = opts.ProbeOption
 	parser.probeSource = opts.ProbeSource
 	if err := parser.parseReader(r, filename); err != nil {
@@ -426,6 +431,7 @@ type kbuildParser struct {
 	order                   int
 	includeFunc             func([]KbuildInclude) error
 	includeDepth            int
+	capabilities            CompilerCapabilities
 	probeOption             func(kind string, candidate, probeContext []string) (bool, error)
 	probeSource             func(language, source string, probeContext []string) (bool, error)
 	filterKbuildFlags       bool
@@ -1246,7 +1252,7 @@ func (p *kbuildParser) assign(lhs, op, rhs, expandedRHS string) {
 	case "+=":
 		current, ok := p.lookupVariable(lhs)
 		switch {
-		case !ok && p.probeOption != nil && linuxProbeContextVariable(lhs):
+		case !ok && (p.probeOption != nil || p.capabilities != nil) && linuxProbeContextVariable(lhs):
 			// The Linux top-level Makefile initializes these as simple
 			// variables before including architecture Makefiles. Compact tree
 			// parsing starts below that initialization, so preserve the real
@@ -1503,7 +1509,7 @@ func (p *kbuildParser) kbuildKnownCall(name string, args []string, original, src
 				name,
 			)
 		}
-		if p.probeSource == nil {
+		if p.probeSource == nil && p.capabilities == nil {
 			if p.probeOption != nil {
 				return "", true, fmt.Errorf("%s: measured Kbuild as-instr requires a source probe", p.currentPos)
 			}
@@ -1589,7 +1595,7 @@ func (p *kbuildParser) linuxLLVMKbuildProbeSupportsSource(
 	architecture, err := normalizeLinuxProbeArchitecture(srcarch)
 	if err != nil {
 		return false, fmt.Errorf(
-			"%s: resolve Clang 22.1.8 Kbuild source probe for %q: %w",
+			"%s: resolve LLVM Kbuild source probe for %q: %w",
 			p.currentPos,
 			language,
 			err,
@@ -1599,9 +1605,16 @@ func (p *kbuildParser) linuxLLVMKbuildProbeSupportsSource(
 	if err != nil {
 		return false, fmt.Errorf("%s: expand Kbuild source probe context: %w", p.currentPos, err)
 	}
+	if p.capabilities != nil {
+		decoded, err := decodeKbuildPrintfB(source)
+		if err != nil {
+			return false, err
+		}
+		return p.capabilities.SupportsSource(capabilityProbeContext(p.currentPos), language, decoded, slices.Clone(context))
+	}
 	if p.probeSource == nil {
 		return false, fmt.Errorf(
-			"%s: unsupported Clang 22.1.8 Kbuild source probe for architecture %q",
+			"%s: unsupported LLVM Kbuild source probe for architecture %q",
 			p.currentPos,
 			architecture,
 		)
@@ -1617,58 +1630,29 @@ func (p *kbuildParser) linuxLLVMKbuildProbeSupportsOption(
 	architecture, err := normalizeLinuxProbeArchitecture(srcarch)
 	if err != nil {
 		return false, fmt.Errorf(
-			"%s: resolve Clang 22.1.8 Kbuild %s candidate %q: %w",
+			"%s: resolve LLVM Kbuild %s candidate %q: %w",
 			p.currentPos,
 			kind,
 			strings.Join(candidate, " "),
 			err,
 		)
 	}
-	key := normalizeLinuxProbeCandidate(candidate)
 	context, err := p.linuxLLVMKbuildProbeContext(kind)
 	if err != nil {
 		return false, fmt.Errorf("%s: expand Kbuild %s probe context: %w", p.currentPos, kind, err)
+	}
+	if p.capabilities != nil {
+		return p.capabilities.SupportsOption(capabilityProbeContext(p.currentPos), kind, slices.Clone(candidate), slices.Clone(context))
 	}
 	if p.probeOption != nil {
 		return p.probeOption(kind, slices.Clone(candidate), slices.Clone(context))
 	}
 
-	if kind == "cc_option" && len(candidate) == 1 && linuxLLVMKbuildSupportsMacroPrefixMap(candidate[0]) {
-		return true, nil
+	capabilities, err := StaticLLVMCapabilities(DefaultLLVMCapabilityProfile, architecture)
+	if err != nil {
+		return false, err
 	}
-	if kind == "cc_option" && architecture == "x86_64" && linuxLLVMKbuildX86ContextCandidates[key] {
-		switch {
-		case slices.Contains(context, "-mpreferred-stack-boundary=2"):
-			return false, nil
-		case slices.Contains(context, "-mstack-alignment=4"):
-			return true, nil
-		default:
-			return false, p.unsupportedLinuxLLVMKbuildProbe(kind, candidate, architecture, context)
-		}
-	}
-	if kind == "ld_option" && architecture == "x86_64" && key == "--no-dynamic-linker" {
-		switch {
-		case slices.Contains(context, "--no-ld-generated-unwind-info"):
-			return false, nil
-		case slices.Contains(context, "elf_x86_64"):
-			return true, nil
-		default:
-			return false, p.unsupportedLinuxLLVMKbuildProbe(kind, candidate, architecture, context)
-		}
-	}
-
-	supported, known := linuxLLVMKbuildCommonOptions[kind+"\x00"+key]
-	if !known {
-		options := linuxLLVMKbuildX86Options
-		if architecture == "aarch64" {
-			options = linuxLLVMKbuildARM64Options
-		}
-		supported, known = options[kind+"\x00"+key]
-	}
-	if !known {
-		return false, p.unsupportedLinuxLLVMKbuildProbe(kind, candidate, architecture, context)
-	}
-	return supported, nil
+	return capabilities.SupportsOption(capabilityProbeContext(p.currentPos), kind, candidate, context)
 }
 
 func linuxLLVMKbuildSupportsMacroPrefixMap(candidate string) bool {
@@ -1721,22 +1705,6 @@ func (p *kbuildParser) linuxLLVMKbuildProbeContext(kind string) ([]string, error
 		context = append(context, concreteKbuildFlags(kbuildFields(value))...)
 	}
 	return context, nil
-}
-
-func (p *kbuildParser) unsupportedLinuxLLVMKbuildProbe(
-	kind string,
-	candidate []string,
-	architecture string,
-	context []string,
-) error {
-	return fmt.Errorf(
-		"%s: unsupported Clang 22.1.8 Kbuild %s candidate %q for architecture %q with context %q",
-		p.currentPos,
-		kind,
-		strings.Join(candidate, " "),
-		architecture,
-		strings.Join(context, " "),
-	)
 }
 
 func (p *kbuildParser) expandVariable(name, original string, depth int) (string, bool, error) {
@@ -1935,101 +1903,6 @@ func isPositionalMakeName(value string) bool {
 		}
 	}
 	return true
-}
-
-var linuxLLVMKbuildCommonOptions = map[string]bool{
-	"cc_option\x00-Wformat-overflow":                               true,
-	"cc_option\x00-Wformat-truncation":                             true,
-	"cc_option\x00-Wmaybe-uninitialized":                           false,
-	"cc_option\x00-Wno-address-of-packed-member":                   true,
-	"cc_option\x00-Wno-fortify-source":                             true,
-	"cc_option\x00-Wno-gnu":                                        true,
-	"cc_option\x00-Wno-missing-prototypes":                         true,
-	"cc_option\x00-Wno-psabi":                                      true,
-	"cc_option\x00-Wno-stringop-overread":                          false,
-	"cc_option\x00-Wno-stringop-truncation":                        false,
-	"cc_option\x00-Wno-switch-unreachable":                         false,
-	"cc_option\x00-Wno-tautological-constant-out-of-range-compare": true,
-	"cc_option\x00-Wno-uninitialized":                              true,
-	"cc_option\x00-Wno-unsequenced":                                true,
-	"cc_option\x00-Wno-unused-but-set-variable":                    true,
-	"cc_option\x00-Wno-unused-const-variable":                      true,
-	"cc_option\x00-Wno-vla":                                        true,
-	"cc_option\x00-Wold-style-declaration":                         false,
-	"cc_option\x00-Wout-of-line-declaration":                       true,
-	"cc_option\x00-Wpacked-not-aligned":                            false,
-	"cc_option\x00-Wrestrict":                                      false,
-	"cc_option\x00-Wstringop-overflow":                             false,
-	"cc_option\x00-Wstringop-truncation":                           false,
-	"cc_option\x00-Wunused-but-set-variable":                       true,
-	"cc_option\x00-Wunused-const-variable":                         true,
-	"cc_option\x00-Wvla-larger-than=1":                             false,
-	"cc_option\x00-femit-struct-debug-detailed=any":                false,
-	"cc_option\x00-fno-addrsig":                                    true,
-	"cc_option\x00-fno-code-hoisting":                              false,
-	"cc_option\x00-fno-conserve-stack":                             false,
-	"cc_option\x00-fno-schedule-insns":                             false,
-	"cc_option\x00-fmin-function-alignment=8":                      false,
-	"cc_option\x00-fsanitize=kernel-memory":                        false,
-	"cc_option\x00-fsched-pressure":                                false,
-	"cc_option\x00-mabi=altivec":                                   false,
-	"cc_option\x00-mgeneral-regs-only":                             true,
-	"cc_option\x00-mno-single-pic-base":                            false,
-	"cc_option\x00-mrecord-mcount":                                 false,
-}
-
-var linuxLLVMKbuildX86Options = map[string]bool{
-	"cc_option\x00-Wa,-mtune=generic32":                       false,
-	"cc_option\x00-Wa,-mrelax-relocations=no":                 true,
-	"cc_option\x00-falign-jumps=0":                            false,
-	"cc_option\x00-falign-jumps=1":                            false,
-	"cc_option\x00-falign-loops=1":                            true,
-	"cc_option\x00-fcf-protection=branch\x00-fno-jump-tables": true,
-	"cc_option\x00-fcf-protection=none":                       true,
-	"cc_option\x00-foptimize-sibling-calls":                   true,
-	"cc_option\x00-maccumulate-outgoing-args":                 false,
-	"cc_option\x00-mindirect-branch-cs-prefix":                true,
-	"cc_option\x00-mno-fp-ret-in-387":                         true,
-	"cc_option\x00-mno-outline-atomics":                       false,
-	"cc_option\x00-mpreferred-stack-boundary=4":               false,
-	"cc_option\x00-mskip-rax-setup":                           true,
-	"cc_option\x00-mstack-alignment=16":                       true,
-	"as_option\x00-Wa,-mtune=generic32":                       false,
-	"ld_option\x00--no-ld-generated-unwind-info":              false,
-	"ld_option\x00--eh-frame-hdr":                             true,
-	"ld_option\x00--no-warn-rwx-segments":                     false,
-}
-
-var linuxLLVMKbuildARM64Options = map[string]bool{
-	"cc_option\x00-mabi=lp64":                false,
-	"cc_option\x00-mbranch-protection=none":  true,
-	"cc_option\x00-mno-outline-atomics":      true,
-	"as_option\x00-Wa,-march=armv8.2-a":      true,
-	"as_option\x00-Wa,-march=armv8.3-a":      true,
-	"as_option\x00-Wa,-march=armv8.4-a":      true,
-	"as_option\x00-Wa,-march=armv8.5-a":      true,
-	"ld_option\x00--no-apply-dynamic-relocs": true,
-	"ld_option\x00-maarch64elf":              true,
-	"ld_option\x00-maarch64elfb":             true,
-}
-
-var linuxLLVMKbuildX86ContextCandidates = map[string]bool{
-	"-falign-loops=0":   true,
-	"-march=atom":       true,
-	"-march=c3":         true,
-	"-march=c3-2":       true,
-	"-march=core2":      true,
-	"-march=geode":      true,
-	"-march=k8":         true,
-	"-march=winchip-c6": true,
-	"-march=winchip2":   true,
-	"-mtune=atom":       true,
-	"-mtune=core2":      true,
-	"-mtune=generic":    true,
-	"-mtune=i686":       true,
-	"-mtune=pentium2":   true,
-	"-mtune=pentium3":   true,
-	"-mtune=pentium4":   true,
 }
 
 func (p *kbuildParser) evalForeach(args []string, original string, depth int) (string, error) {
@@ -2437,6 +2310,7 @@ func (p *kbuildDirectoryTreeParser) parsePath(path, objectDir string, gate Kbuil
 			Variables:               p.inheritedVariables,
 			ConfigVariablesComplete: p.opts.ConfigVariablesComplete,
 			MaxIncludeDepth:         p.opts.MaxIncludeDepth,
+			Capabilities:            p.opts.Capabilities,
 			ProbeOption:             p.opts.ProbeOption,
 			ProbeSource:             p.opts.ProbeSource,
 		}, variableOverrides)
@@ -2568,6 +2442,7 @@ func (p *kbuildDirectoryTreeParser) parseRootMakefile(path string) (*KbuildFile,
 		Variables:               p.inheritedVariables,
 		ConfigVariablesComplete: p.opts.ConfigVariablesComplete,
 		MaxIncludeDepth:         p.opts.MaxIncludeDepth,
+		Capabilities:            p.opts.Capabilities,
 		ProbeOption:             p.opts.ProbeOption,
 		ProbeSource:             p.opts.ProbeSource,
 		filterKbuildFlags:       true,
@@ -4057,4 +3932,8 @@ func sortedKbuildObjects(objects []KbuildObject) {
 		}
 		return objects[i].Position.String() < objects[j].Position.String()
 	})
+}
+
+func capabilityProbeContext(pos Position) context.Context {
+	return context.WithValue(context.Background(), capabilityPositionKey{}, pos)
 }
